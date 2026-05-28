@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>About: My first example</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="document.addEventListener('DOMContentLoaded',()=>{ if(typeof renderMathInElement!=='undefined') renderMathInElement(document.getElementById('content'),{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]}); })"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#1e293b;color:#ffffff;line-height:1.7;-webkit-font-smoothing:antialiased}
+    .s-nav{height:50px;background:#1e293b;display:flex;align-items:center;padding:0 20px;gap:12px;position:sticky;top:0;z-index:10;border-bottom:1px solid rgba(255,255,255,0.1)}
+    .s-brand{font-weight:600;font-size:13px;color:#ffffff;display:flex;align-items:center;gap:8px;text-decoration:none}
+    .s-brand svg{color:rgba(255,255,255,0.7)}
+    .s-back{margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:5px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);font-size:11px;font-weight:500;text-decoration:none;transition:all .15s}
+    .s-back:hover{background:rgba(255,255,255,0.12);color:#ffffff}
+    .s-back i{font-size:10px}
+    .s-wrap{max-width:780px;margin:36px auto;padding:0 20px 60px}
+    .s-card{background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.1);border-top:2px solid rgba(255,255,255,0.3);border-radius:8px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,0.1)}
+    .s-card-head{padding:28px 36px 20px;border-bottom:1px solid rgba(255,255,255,0.1)}
+    .s-card-head h1{font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-.02em;margin-bottom:6px}
+    .s-meta{font-size:11px;color:rgba(255,255,255,0.7);display:flex;align-items:center;gap:10px}
+    .s-meta i{font-size:10px}
+    .s-body{padding:28px 36px}
+    .s-body h2{font-size:14px;font-weight:700;color:#ffffff;margin:24px 0 8px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.1);letter-spacing:-.01em}
+    .s-body h3{font-size:13px;font-weight:600;color:#ffffff;margin:16px 0 5px}
+    .s-body p{font-size:13.5px;color:rgba(255,255,255,0.8);line-height:1.8;margin-bottom:12px}
+    .s-body ul,.s-body ol{padding-left:18px;margin-bottom:12px}
+    .s-body li{font-size:13.5px;color:rgba(255,255,255,0.8);line-height:1.8;margin-bottom:3px}
+    .s-body strong{color:#ffffff;font-weight:600}
+    .s-body em{color:rgba(255,255,255,0.6)}
+    .s-body code{font-family:'SF Mono',ui-monospace,Consolas,monospace;font-size:11.5px;background:#f8fafc;border:1px solid #e2e8f0;padding:1px 5px;border-radius:3px;color:#6d28d9}
+    .s-body pre{background:#1e293b;border-radius:6px;padding:16px 20px;overflow-x:auto;margin:14px 0}
+    .s-body pre code{background:none;border:none;color:#e2e8f0;font-size:11.5px;padding:0}
+    .s-body blockquote{border-left:3px solid #e2e8f0;padding:2px 14px;margin:12px 0;color:#64748b}
+    a{color:#2563eb;text-decoration:none}
+    a:hover{text-decoration:underline}
+    .katex-display{overflow-x:auto;padding:6px 0}
+  </style>
+</head>
+<body>
+  <nav class="s-nav">
+    <a href="index.html" class="s-brand">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      My first example
+    </a>
+    <a href="index.html" class="s-back"><i class="fas fa-arrow-left"></i> Dashboard</a>
+  </nav>
+  <div class="s-wrap">
+    <div class="s-card">
+      <div class="s-card-head">
+        <h1>My first example</h1>
+        <div class="s-meta"><i class="fas fa-file-alt"></i> Analytical Report &nbsp;&nbsp; <i class="fas fa-layer-group"></i> HydroBlox &nbsp;&nbsp; <i class="fas fa-calendar-alt"></i> May 28, 2026</div>
+      </div>
+      <div class="s-body" id="content"></div>
+      <div id="sum-notice" style="margin:0 36px 24px;padding:12px 14px;background:#fffbeb;border:1px solid #fde68a;border-radius:6px;display:flex;align-items:flex-start;gap:10px;">
+        <i class="fas fa-triangle-exclamation" style="color:#d97706;font-size:12px;margin-top:2px;flex-shrink:0;"></i>
+        <p style="font-size:12px;color:#78350f;line-height:1.6;margin:0;flex:1;">
+          <strong>Export Notice:</strong> This document and the accompanying dashboard are a static snapshot generated from HydroBlox. Visualizations, data selections, and interactive features in the exported files may render differently than in the live application due to data structure variations and browser environment differences.
+        </p>
+        <button onclick="(function(){try{localStorage.setItem('hb_notice_dismissed','1');}catch(e){}document.getElementById('sum-notice').style.display='none';})()" style="background:none;border:none;cursor:pointer;color:#92400e;font-size:14px;padding:0 2px;line-height:1;flex-shrink:0;margin-top:1px;" title="Dismiss">&#x2715;</button>
+      </div>
+      <script>(function(){try{if(localStorage.getItem('hb_notice_dismissed')==='1'){var b=document.getElementById('sum-notice');if(b)b.style.display='none';}}catch(e){}})();</script>
+    </div>
+  </div>
+  <script src="assets/marked.min.js"></script>
+  <script id="summary-md" type="text/markdown">## Background
+
+Hydrological modeling is critical for understanding and predicting streamflow dynamics, particularly in the context of climate variability and land-use changes. The National Water Model (NWM) provides a comprehensive framework for simulating hydrological processes across the United States, while United States Geological Survey (USGS) gauge stations offer real-time observational data that can validate and refine these simulations. This analysis aims to compare streamflow predictions from the NWM with observed data from USGS gauge stations, utilizing precipitation data sourced from NASA's POWER dataset. The objective is to assess the accuracy of NWM predictions and to explore the potential of artificial neural networks (ANN) for improving streamflow forecasts based on historical precipitation and streamflow data.
+
+## Data Sources
+
+The datasets utilized in this analysis include daily precipitation data from NASA's POWER dataset and daily streamflow data from the USGS. The NASA POWER dataset provides corrected total precipitation (PRECTOTCORR), surface temperature (T2M), and all-sky surface solar radiation (ALLSKY_SFC_SW_DWN) for the study area. The precipitation data is processed to ensure that negative values are set to zero, as precipitation cannot be negative. The USGS dataset includes time series data of streamflow measured in cubic meters per second (cms), which is converted to cubic feet per second (cfs) using the conversion factor \(1 \text{ cms} = 35.3147 \text{ cfs}\).
+
+The preprocessing of the NASA POWER data involves parsing the JSON format to extract relevant parameters, ensuring the integrity of date formats, and filtering out invalid entries. The resulting dataset includes daily precipitation values, temperature, and solar radiation, all of which are critical for understanding the hydrological response of the watershed. Similarly, the USGS data is parsed to extract streamflow measurements, which are also filtered for validity and sorted chronologically.
+
+## Technical Implementation
+
+The analytical framework employs a machine learning approach to model the relationship between precipitation and streamflow. The data preprocessing steps for both datasets include merging the precipitation and streamflow datasets on the date field, followed by the removal of any rows with missing values in either dataset. This ensures that the model is trained on a complete dataset, which is crucial for achieving robust predictions.
+
+The merged dataset, denoted as $D$, consists of two primary variables: daily precipitation (\(P\)) in millimeters and daily streamflow $Q$ in cubic meters per second. The relationship between these variables can be described by the following equation, which serves as the basis for the ANN model:
+
+$$ Q_t = f(P_t, T_t, SW_t) $$
+
+where \(Q_t\) is the streamflow at time \(t\), \(P_t\) is the precipitation at time \(t\), \(T_t\) is the temperature at time \(t\), and \(SW_t\) is the solar radiation at time \(t\). The function \(f\) represents the complex interactions modeled by the ANN.
+
+The ANN model is constructed using the Multi-layer Perceptron (MLP) regressor from the scikit-learn library. Prior to training, the input features are standardized using the StandardScaler to ensure that all features contribute equally to the model training. The model is trained on a portion of the dataset, with the remaining data reserved for validation. The training process involves minimizing the mean squared error (MSE), defined as:
+
+$$ \text{MSE} = \frac{1}{n} \sum_{i=1}^{n} (Q_i - \hat{Q}_i)^2 $$
+
+where \(Q_i\) is the observed streamflow and \(\hat{Q}_i\) is the predicted streamflow from the model, and \(n\) is the number of observations.
+
+After training, the model's performance is evaluated using the coefficient of determination (\(R^2\)), which quantifies the proportion of variance in the dependent variable that can be explained by the independent variables. The \(R^2\) statistic is calculated as follows:
+
+$$ R^2 = 1 - \frac{\sum_{i=1}^{n} (Q_i - \hat{Q}_i)^2}{\sum_{i=1}^{n} (Q_i - \bar{Q})^2} $$
+
+where \(\bar{Q}\) is the mean of the observed streamflow values. A higher \(R^2\) value indicates a better fit of the model to the data.
+
+The results of the ANN model are visualized through various metrics, including scatter plots of observed versus predicted streamflow, residuals histograms to assess the distribution of prediction errors, and time series plots to compare model predictions against observed data over the evaluation period. These visualizations are critical for interpreting the model's performance and identifying any systematic biases in the predictions.
+
+In summary, the integration of NASA POWER precipitation data with USGS streamflow observations through advanced machine learning techniques provides a robust framework for enhancing streamflow prediction accuracy. The comparative analysis of NWM predictions against observed data will further elucidate the strengths and limitations of current hydrological modeling approaches, paving the way for improved forecasting methodologies in hydrology.</script>
+  <script>
+    if (document.getElementById('content')) {
+      const el = document.getElementById('content');
+      const text = document.getElementById('summary-md').textContent;
+      if (typeof marked !== 'undefined') {
+        el.innerHTML = marked.parse(text);
+      } else {
+        el.innerHTML = '<div style="font-family: inherit; white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: #374151;">' + 
+          text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+              .replace(/\*\*([^*]+?)\*\*/g, "<strong>$1</strong>")
+              .replace(/\*([^*]+?)\*/g, "<em>$1</em>")
+              .replace(/`([^`]+)`/g, "<code>$1</code>") + '</div>';
+      }
+    }
+  </script>
+</body>
+</html>

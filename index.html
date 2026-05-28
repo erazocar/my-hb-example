@@ -1,0 +1,2315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My first example</title>
+  <meta name="description" content="My first example — Analytical Dashboard" />
+  
+  <link rel="stylesheet" href="assets/leaflet.min.css" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="document.addEventListener('DOMContentLoaded',()=>{ if(typeof renderMathInElement!=='undefined') renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]}); })"></script>
+  <style>
+    
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#eef0f4;color:#111827;height:100vh;display:flex;flex-direction:column;overflow:hidden;-webkit-font-smoothing:antialiased}
+
+/*  Navbar  */
+.hb-nav{height:50px;background:#1e293b;color:#f1f5f9;display:flex;align-items:center;padding:0 16px;flex-shrink:0;z-index:200;gap:12px}
+.hb-nav-left{min-width:160px;display:flex;align-items:center;gap:8px}
+.hb-nav-logo{color:#64748b;flex-shrink:0}
+.hb-nav-title{flex:1;display:flex;align-items:center;justify-content:center}
+.hb-project-name{font-weight:600;font-size:13px;color:#f1f5f9;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:480px}
+.hb-nav-right{min-width:160px;display:flex;align-items:center;justify-content:flex-end;gap:8px}
+.hb-nav-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:5px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;font-size:11px;font-weight:500;text-decoration:none;transition:all .15s;white-space:nowrap}
+.hb-nav-pill:hover{background:rgba(255,255,255,0.12);color:#f1f5f9}
+.hb-nav-pill i{font-size:10px}
+.hb-nav-meta{font-size:11px;color:#475569;display:flex;align-items:center;gap:4px;white-space:nowrap}
+.hb-nav-meta i{font-size:10px}
+.hb-pwa-badge{background:rgba(134,239,172,0.1);border:1px solid rgba(134,239,172,0.2);color:#86efac;padding:3px 8px;border-radius:5px;font-weight:600;font-size:10px}
+
+/*  App shell  */
+.hb-app{flex:1;display:flex;overflow:hidden;min-height:0;flex-grow:1;}
+
+/*  Grid layouts  */
+.hb-grid{flex:1;display:grid;gap:8px;padding:10px;min-height:0;min-width:0;overflow:hidden;align-items:stretch;justify-items:stretch;}
+.hb-grid-single{grid-template-columns:1fr;grid-template-rows:1fr}
+.hb-grid-cols2{grid-template-columns:1fr 1fr;grid-template-rows:1fr}
+.hb-grid-rows2{grid-template-columns:1fr;grid-template-rows:1fr 1fr}
+.hb-grid-win3{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+.hb-grid-win3 > #panel-0{grid-row:1 / span 2}
+.hb-grid-grid4{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+
+/*  Panel  */
+.hb-panel{background:#fff;border:1px solid #e2e8f0;border-top:2px solid #334155;border-radius:8px;display:flex;flex-direction:column;overflow:hidden;min-height:0;min-width:0;box-shadow:0 1px 6px rgba(0,0,0,0.05);flex-grow:1;}
+.hb-panel-toolbar{display:flex;align-items:center;gap:6px;padding:7px 10px;background:#f8fafc;border-bottom:1px solid #e5e7eb;flex-shrink:0}
+.hb-node-select{flex:1;font-size:11px;padding:4px 7px;border:1px solid #e2e8f0;border-radius:5px;background:#fff;color:#374151;outline:none;font-family:inherit;cursor:pointer;font-weight:500}
+.hb-node-select:focus{border-color:#3b82f6;box-shadow:0 0 0 2px rgba(59,130,246,0.1)}
+.hb-view-btns{display:flex;gap:2px}
+.hb-view-btn{width:26px;height:26px;border-radius:5px;border:1px solid #e5e7eb;background:transparent;color:#9ca3af;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;transition:all .1s}
+.hb-view-btn:hover{background:#f1f5f9;color:#334155}
+.hb-view-btn.active{background:#334155;border-color:#334155;color:#fff}
+.hb-panel-content{flex:1;overflow:hidden;min-height:0;min-width:0;position:relative;display:flex;flex-direction:column;}
+
+/*  Empty state  */
+.hb-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;color:#d1d5db}
+.hb-empty i{font-size:28px;color:#e5e7eb}
+.hb-empty span{font-size:12px;font-weight:500;color:#9ca3af}
+
+/*  Table  */
+.hb-table-wrap{height:100%;overflow:auto;padding:12px}
+table.hb-table{width:100%;border-collapse:collapse;font-size:12px}
+.hb-table th{background:#f8fafc;border-bottom:2px solid #e5e7eb;padding:7px 10px;text-align:left;font-weight:700;color:#374151;cursor:pointer;white-space:nowrap;position:sticky;top:0;z-index:1;font-size:11px}
+.hb-table th:hover{background:#f1f5f9;color:#1e293b}
+.hb-table td{padding:5px 10px;border-bottom:1px solid #f3f4f6;color:#374151;font-size:12px}
+.hb-table tr:nth-child(even) td{background:#fafafa}
+.hb-table tr:hover td{background:#eff6ff}
+
+/*  JSON Tree Explorer  */
+.hb-json-wrap{height:100%;overflow:auto;padding:12px;font-family:'SF Mono',ui-monospace,Consolas,monospace;font-size:11px;line-height:1.7}
+.hb-json-node{padding-left:16px;border-left:1px solid #f3f4f6;margin:1px 0}
+.hb-json-toggle{cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:4px;padding:1px 3px;border-radius:3px;transition:background .1s}
+.hb-json-toggle:hover{background:#f3f4f6}
+.hb-json-toggle i{font-size:8px;color:#94a3b8;width:10px}
+.hb-json-key{color:#7c3aed;font-weight:600}
+.hb-json-colon{color:#94a3b8;margin:0 3px}
+.hb-json-str{color:#059669}
+.hb-json-num{color:#0891b2}
+.hb-json-bool{color:#d97706;font-weight:600}
+.hb-json-null{color:#94a3b8;font-style:italic}
+.hb-json-collapsed{display:none}
+.hb-json-summary{color:#94a3b8;font-size:10px;font-style:italic;margin-left:4px}
+.hb-json-page-btn{padding:2px 8px;font-size:10px;cursor:pointer;background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px;color:#334155;transition:all .1s}
+.hb-json-page-btn:hover:not(:disabled){background:#f1f5f9;border-color:#cbd5e1}
+.hb-json-page-btn:disabled{opacity:0.5;cursor:not-allowed}
+.hb-json-checkbox{margin-right:4px;margin-left:4px;cursor:pointer;accent-color:#3b82f6}
+
+/*  Inspector sidebar  */
+.hb-inspector{width:224px;flex-shrink:0;border-left:1px solid #e2e8f0;background:#fafbfc;display:flex;flex-direction:column;overflow:hidden}
+.hb-inspector-header{padding:9px 12px;font-size:10px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #f3f4f6;flex-shrink:0;display:flex;align-items:center;gap:6px;background:#f8fafc}
+.hb-inspector-header i{font-size:11px;color:#94a3b8}
+.hb-inspector-meta{margin-left:auto;font-size:9px;background:#e5e7eb;padding:1px 6px;border-radius:9px;color:#6b7280;font-weight:600;text-transform:none;letter-spacing:0}
+.hb-inspector-foot{padding:8px 12px;font-size:10px;color:#94a3b8;border-top:1px solid #f3f4f6;text-align:center;flex-shrink:0}
+.hb-node-list{flex:1;overflow-y:auto;padding:6px 8px}
+.hb-node-item{padding:8px 10px;border-radius:6px;border:1px solid transparent;margin-bottom:3px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .12s;background:transparent}
+.hb-node-item:hover{background:#fff;border-color:#e5e7eb}
+.hb-node-item.active{background:#fff;border-color:#e2e8f0;border-left:3px solid #334155;padding-left:8px}
+.hb-node-icon{width:24px;height:24px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.hb-node-name{font-weight:600;font-size:11px;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.hb-node-type{font-size:9px;color:#9ca3af;font-weight:500}
+
+    /* Dynamic Theme Overrides */
+    body, .hb-summary-panel { background: #1e293b !important; color: #ffffff !important; }
+    .hb-nav { background: #1e293b !important; color: #ffffff !important; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .hb-nav-title .hb-project-name { color: #ffffff !important; }
+    .hb-nav-meta { color: rgba(255,255,255,0.7) !important; }
+    .hb-nav-pill { color: #ffffff !important; border-color: rgba(255,255,255,0.7) !important; }
+    .hb-nav-pill:hover { background: rgba(255,255,255,0.15) !important; color: #ffffff !important; }
+    .hb-panel { border-top: 2px solid #1e293b !important; }
+    .hb-panel-toolbar { border-bottom: 1px solid #e5e7eb !important; }
+    .hb-inspector-header { background: #1e293b !important; color: #ffffff !important; }
+    .hb-inspector-header i { color: rgba(255,255,255,0.7) !important; }
+    .hb-view-btn.active { background: #1e293b !important; border-color: #1e293b !important; color: #ffffff !important; }
+    /* Summary integration styles */
+    .hb-main-layout { display: flex; flex: 1; overflow: hidden; }
+    .hb-main-layout.col { flex-direction: column; }
+    .hb-summary-panel { overflow-y: auto; padding: 24px; flex-shrink: 0; }
+    .hb-summary-panel.left, .hb-summary-panel.right { width: clamp(300px, 30%, 450px); border-right: 1px solid rgba(128,128,128,0.2); }
+    .hb-summary-panel.right { border-right: none; border-left: 1px solid rgba(128,128,128,0.2); }
+    .hb-summary-panel.top, .hb-summary-panel.bottom { height: clamp(200px, 35%, 400px); border-bottom: 1px solid rgba(128,128,128,0.2); display: flex; justify-content: center; }
+    .hb-summary-panel.bottom { border-bottom: none; border-top: 1px solid rgba(128,128,128,0.2); }
+    .hb-summary-content { max-width: 800px; width: 100%; }
+    .hb-summary-content h2 { font-size: 20px; font-weight: 800; color: #ffffff; margin-top: 0; margin-bottom: 16px; border-bottom: 1px solid rgba(128,128,128,0.2); padding-bottom: 8px; }
+    .hb-summary-content h3 { font-size: 16px; font-weight: 700; color: #ffffff; margin: 20px 0 8px; }
+    .hb-summary-content h4 { font-size: 14px; font-weight: 600; color: #ffffff; margin: 16px 0 6px; }
+    .hb-summary-content p { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.85); margin-bottom: 14px; }
+    .hb-summary-content .md-list { padding-left: 24px; font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.85); margin-bottom: 14px; }
+    .hb-summary-content .md-list li { margin-bottom: 6px; }
+    .hb-summary-content code { font-family: ui-monospace, monospace; font-size: 12px; background: rgba(128,128,128,0.15); padding: 2px 4px; border-radius: 4px; }
+    .hb-summary-content strong { font-weight: 600; color: #ffffff; }
+  </style>
+</head>
+<body style="display: flex; flex-direction: column; height: 100vh; margin: 0;">
+  <!--  Navbar  -->
+  <nav class="hb-nav">
+    <div class="hb-nav-left">
+      <a href="summary.html" class="hb-nav-pill"><i class="fas fa-file-alt"></i> About</a>
+    </div>
+    <div class="hb-nav-title">
+      <span class="hb-project-name">My first example</span>
+    </div>
+    <div class="hb-nav-right">
+      <span class="hb-nav-meta"><i class="fas fa-calendar-alt"></i>&nbsp;May 28, 2026</span>
+      
+    </div>
+  </nav>
+
+
+  <!-- Disclaimer banner -->
+  <div id="hb-disclaimer" style="display:flex;align-items:center;gap:8px;padding:5px 16px;background:#fffbeb;border-bottom:1px solid #fde68a;font-family:'Inter',sans-serif;font-size:11px;color:#92400e;flex-shrink:0;">
+    <i class="fas fa-triangle-exclamation" style="color:#d97706;font-size:11px;flex-shrink:0;"></i>
+    <span><strong>Export Notice:</strong> This standalone dashboard is a static snapshot of the HydroBlox analysis. Some visualizations, data selections, and interactive features may render differently than in the live application.</span>
+    <button onclick="(function(){try{localStorage.setItem('hb_notice_dismissed','1');}catch(e){}document.getElementById('hb-disclaimer').style.display='none';})()" style="margin-left:auto;background:none;border:none;cursor:pointer;color:#92400e;font-size:13px;padding:0 2px;line-height:1;flex-shrink:0;" title="Dismiss">&#x2715;</button>
+  </div>
+  <script>(function(){try{if(localStorage.getItem('hb_notice_dismissed')==='1'){var b=document.getElementById('hb-disclaimer');if(b)b.style.display='none';}}catch(e){}})();</script>
+
+  <div class="hb-main-layout ">
+    
+    
+    <!--  App shell  -->
+    <div class="hb-app">
+      <!-- Panel grid -->
+      <div id="hb-grid" class="hb-grid hb-grid-grid4">
+        <!-- panels injected by JS -->
+      </div>
+    </div>
+
+    
+  </div>
+
+  <script src="assets/d3.min.js"></script>
+  <script src="assets/leaflet.min.js"></script>
+  <script src="assets/pako.min.js"></script>
+  <script src="assets/georaster.min.js"></script>
+  <script src="assets/georaster-layer.min.js"></script>
+  <script src="assets/marked.min.js"></script>
+  
+  
+  <script>
+
+//  State 
+const NODES    = [{"id":"node-nasa-precip","name":"NASA_POWER_DAILY_PRECIP","type":"data"},{"id":"node-usgs-flow","name":"USGS_DAILY_FLOW","type":"data"},{"id":"node-parse-precip","name":"PARSE_NASA_PRECIP","type":"code","analyticalCode":"if (!data) return [];\nconst raw = typeof data === 'string' ? JSON.parse(data) : data;\nconst params = raw?.properties?.parameter ?? raw?.parameter ?? {};\nconst P = params.PRECTOTCORR ?? params.PRECTOT ?? {};\nconst T = params.T2M ?? {};\nconst SW = params.ALLSKY_SFC_SW_DWN ?? {};\nreturn Object.keys(P)\n  .map(dt => ({\n    date: `${dt.slice(0,4)}-${dt.slice(4,6)}-${dt.slice(6,8)}`,\n    precip_mm: Math.max(0, parseFloat(P[dt]) || 0),\n    T2M: parseFloat(T[dt]) || 0,\n    Solar_Rad: parseFloat(SW[dt]) || 0\n  }))\n  .filter(r => r.date.length === 10)\n  .sort((a,b) => a.date.localeCompare(b.date));"},{"id":"node-parse-flow","name":"PARSE_USGS_FLOW","type":"code","analyticalCode":"if (!data) return [];\nconst raw = typeof data === 'string' ? JSON.parse(data) : data;\nconst ts = (raw?.value?.timeSeries ?? raw?.timeSeries ?? [])[0];\nif (!ts) return [];\nconst vals = ts?.values?.[0]?.value ?? [];\nreturn vals\n  .map(v => ({ date: v.dateTime?.slice(0,10), Q_cms: parseFloat(v.value)*0.0283168 }))\n  .filter(r => !isNaN(r.Q_cms) && r.Q_cms >= 0)\n  .sort((a,b) => a.date.localeCompare(b.date));"},{"id":"node-lstm-train","name":"ANN_TRAIN_PREDICT","type":"code","analyticalCode":"import json, numpy as np, pandas as pd, math\nfrom sklearn.neural_network import MLPRegressor\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.metrics import mean_squared_error, r2_score\n\npdf = pd.DataFrame(json.loads(input_data[0]) if isinstance(input_data[0],str) else input_data[0])\nqdf = pd.DataFrame(json.loads(input_data[1]) if isinstance(input_data[1],str) else input_data[1])\ndf = pd.merge(pdf, qdf, on='date', how='inner').sort_values('date').reset_index(drop=True)\ndf = df.dropna(subset=['precip_mm','Q_cms'])\n\nif len(df) < 100:\n    return {'error': f'Insufficient merged input_"},{"id":"node-chart","name":"ANN_PREDICTION_CHART","type":"visualization","chartConfig":{"type":"line","title":"ANN Streamflow Forecast — Guadalupe River","xKey":"date","yLabel":"Streamflow (m³/s)","xLabel":"Date","series":[{"key":"observed","label":"Observed","color":"#2563eb","dashed":false},{"key":"predicted","label":"LSTM Pred","color":"#dc2626","dashed":true}],"selectedPaths":["comparison"]}},{"id":"node-metrics","name":"ANN_METRICS_TABLE","type":"visualization","tableConfig":{"title":"ANN Model Performance Metrics","selectedPaths":["R2_Score","KGE","RMSE_cms","PBIAS_pct","epochs_run"],"striped":"odd"}},{"id":"node-scatter","name":"ANN_SCATTER","type":"visualization","chartConfig":{"type":"scatter","title":"ANN Observed vs Predicted","xKey":"obs","yLabel":"Predicted Flow","xLabel":"Observed Flow","series":[{"key":"pred","label":"Predictions","color":"#14b8a6","dashed":false}],"selectedPaths":["scatter"]}},{"id":"node-hist","name":"ANN_RESIDUALS_HIST","type":"visualization","chartConfig":{"type":"bar","title":"Residual Distribution","xKey":"bin","yLabel":"Frequency","xLabel":"Error Bin","series":[{"key":"count","label":"Count","color":"#ef4444","dashed":false}],"selectedPaths":["histogram"]}}];
+const dataCache = {};
+let state = {
+  layoutMode: "grid4",
+  panels: [{"view":"maps","nodeId":"node-nasa-precip"},{"view":"charts","nodeId":"node-chart"},{"view":"charts","nodeId":"node-hist"},{"view":"tables","nodeId":"node-metrics"}],
+};
+const PANEL_COUNTS = { single:1, cols2:2, rows2:2, win3:3, grid4:4 };
+const maps   = {};
+const charts = {};
+// Safe chart teardown — works with D3 (_cleanup) and any future renderer
+function destroyChart(idx) {
+  const c = charts[idx];
+  if (!c) return;
+  try { if (typeof c._cleanup === 'function') c._cleanup(); } catch(e) {}
+  try { if (typeof c.destroy  === 'function') c.destroy();  } catch(e) {}
+  delete charts[idx];
+}
+
+//  Boot 
+window.HB_SERVE_MODE = false;
+window.addEventListener('DOMContentLoaded', () => {
+  console.log("HydroBlox PWA: DOMContentLoaded triggered. Initializing dashboard...");
+  console.log("HydroBlox PWA: NODES available:", typeof NODES !== 'undefined' ? NODES.length : 0);
+  console.log("HydroBlox PWA: PANELS available:", typeof state.panels !== 'undefined' ? state.panels.length : 0);
+  renderGrid();
+});
+window.addEventListener('load', () => {
+  console.log("HydroBlox PWA: window loaded. External resources should be ready.");
+});
+
+//  Grid + Panels 
+function renderGrid() {
+  const grid = document.getElementById('hb-grid');
+  grid.innerHTML = '';
+  state.panels.forEach((panel, i) => {
+    grid.appendChild(buildPanelEl(i, panel));
+  });
+  state.panels.forEach((panel, i) => {
+    if (panel.nodeId) renderPanelContent(i, panel);
+  });
+}
+
+function buildPanelEl(i, panel) {
+  const wrap = document.createElement('div');
+  wrap.className = 'hb-panel';
+  wrap.id = 'panel-' + i;
+
+  const tb = document.createElement('div');
+  tb.className = 'hb-panel-toolbar';
+
+  const sel = document.createElement('select');
+  sel.className = 'hb-node-select';
+  sel.innerHTML = '<option value="">-- select result --</option>' +
+    (panel.view === 'maps' ? `<option value="ALL" ${panel.nodeId==='ALL'?'selected':''}>All Spatial Layers (Overlaid)</option>` : '') +
+    NODES.map(n => `<option value="${esc(n.id)}" ${n.id===panel.nodeId?'selected':''}>${esc(n.name)}</option>`).join('');
+  sel.onchange = e => { state.panels[i].nodeId = e.target.value; renderPanelContent(i, state.panels[i]); };
+
+  const viewBtns = document.createElement('div');
+  viewBtns.className = 'hb-view-btns';
+  [['maps','fa-map','Map'],['charts','fa-chart-line','Chart'],['tables','fa-table','Table'],['data','fa-code','JSON']].forEach(([v,icon,label]) => {
+    const b = document.createElement('button');
+    b.className = 'hb-view-btn' + (panel.view===v?' active':'');
+    b.title = label;
+    b.innerHTML = '<i class="fas ' + icon + '"></i>';
+    b.onclick = () => {
+      state.panels[i].view = v;
+      wrap.querySelectorAll('.hb-view-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      if (maps[i]) { maps[i].remove(); delete maps[i]; }
+      destroyChart(i);
+      const c = wrap.querySelector('.hb-panel-content'); if(c) c.innerHTML='';
+      const allOpt = sel.querySelector('option[value="ALL"]');
+      if (v === 'maps' && !allOpt) {
+        const opt = document.createElement('option');
+        opt.value = 'ALL'; opt.textContent = 'All Spatial Layers (Overlaid)';
+        sel.insertBefore(opt, sel.options[1] || null);
+      } else if (v !== 'maps' && allOpt) {
+        allOpt.remove();
+        if (sel.value === 'ALL') { sel.value = ''; state.panels[i].nodeId = ''; }
+      }
+      if (v === 'maps' || v === 'data') {
+        const ex = wrap.querySelector('.hb-path-explorer');
+        if (ex) ex.style.display = 'none';
+        explorerBtn.classList.remove('active');
+        panel._explorerOpen = false;
+      }
+      explorerBtn.style.display = (v === 'maps' || v === 'data') ? 'none' : '';
+      if (wrap._syncChartOpts) wrap._syncChartOpts(v);
+      renderPanelContent(i, state.panels[i]);
+    };
+    viewBtns.appendChild(b);
+  });
+
+  const explorerBtn = document.createElement('button');
+  explorerBtn.className = 'hb-view-btn';
+  explorerBtn.title = 'Toggle Data Path Selector';
+  explorerBtn.style.cssText = 'margin-left:4px;border-color:#c7d7ff;' + (panel.view==='maps'||panel.view==='data'?'display:none;':'');
+  explorerBtn.innerHTML = '<i class="fas fa-sitemap"></i>';
+  explorerBtn.onclick = () => {
+    panel._explorerOpen = !panel._explorerOpen;
+    explorerBtn.classList.toggle('active', !!panel._explorerOpen);
+    const explorer = wrap.querySelector('.hb-path-explorer');
+    if (explorer) explorer.style.display = panel._explorerOpen ? 'flex' : 'none';
+    if (panel.view === 'charts' || panel.view === 'tables') {
+      destroyChart(i);
+      renderPanelContent(i, state.panels[i]);
+    }
+  };
+  viewBtns.appendChild(explorerBtn);
+
+  // -- Chart/Table options row (chart-type, axis selectors) shown only when relevant --
+  const chartOptsRow = document.createElement('div');
+  chartOptsRow.style.cssText = 'display:' + (panel.view === 'charts' ? 'flex' : 'none') + ';align-items:center;gap:4px;padding:4px 10px 5px;background:#f8fafc;border-bottom:1px solid #f0f2f5;flex-shrink:0;flex-wrap:wrap;';
+  const mkSel = (label, options, current, onChange) => {
+    const wrap2 = document.createElement('div');
+    wrap2.style.cssText = 'display:flex;align-items:center;gap:3px;';
+    const lbl2 = document.createElement('span');
+    lbl2.style.cssText = 'font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;';
+    lbl2.textContent = label;
+    const s = document.createElement('select');
+    s.style.cssText = 'font-size:10px;padding:2px 5px;border:1px solid #e2e8f0;border-radius:4px;background:#fff;color:#374151;cursor:pointer;max-width:90px;font-family:inherit;';
+    options.forEach(([val, text]) => {
+      const o = document.createElement('option');
+      o.value = val; o.textContent = text;
+      if (val === current) o.selected = true;
+      s.appendChild(o);
+    });
+    s.onchange = () => onChange(s.value);
+    wrap2.appendChild(lbl2); wrap2.appendChild(s);
+    return wrap2;
+  };
+  const nodeDef0 = NODES.find(function(n) { return n.id === panel.nodeId; });
+  const cc0 = (nodeDef0 && nodeDef0.chartConfig) || {};
+  if (!panel._chartOverride) panel._chartOverride = {};
+  const chartTypeCtrl = mkSel('Type', [
+    ['line','Line'],['area','Area'],['bar','Bar'],['scatter','Scatter'],['pie','Pie']
+  ], panel._chartOverride.type || cc0.type || 'line', (v) => {
+    panel._chartOverride.type = v;
+    if (charts[i]) { try { if (charts[i]._cleanup) charts[i]._cleanup(); } catch(e) {} delete charts[i]; }
+    renderPanelContent(i, state.panels[i]);
+  });
+  chartOptsRow.appendChild(chartTypeCtrl);
+  // X/Y axis selectors — populated once data loads via wrap._updateChartOpts
+  const xSelWrap = mkSel('X', [['','auto']], panel._chartOverride.xKey || cc0.xKey || '', (v) => {
+    panel._chartOverride.xKey = v || undefined;
+    if (charts[i]) { try { if (charts[i]._cleanup) charts[i]._cleanup(); } catch(e) {} delete charts[i]; }
+    renderPanelContent(i, state.panels[i]);
+  });
+  const ySelWrap = mkSel('Y', [['','auto']], panel._chartOverride.yKey || cc0.yKey || '', (v) => {
+    panel._chartOverride.yKey = v || undefined;
+    if (charts[i]) { try { if (charts[i]._cleanup) charts[i]._cleanup(); } catch(e) {} delete charts[i]; }
+    renderPanelContent(i, state.panels[i]);
+  });
+  chartOptsRow.appendChild(xSelWrap);
+  chartOptsRow.appendChild(ySelWrap);
+  // Expose a function so renderPanelContent can populate axis dropdowns after data loads
+  wrap._updateChartOpts = function(fieldNames) {
+    const xS = xSelWrap.querySelector('select');
+    const yS = ySelWrap.querySelector('select');
+    [xS, yS].forEach(function(s, si) {
+      if (!s) return;
+      const cur = s.value;
+      s.innerHTML = '<option value="">auto</option>';
+      fieldNames.forEach(function(f) {
+        const o = document.createElement('option');
+        o.value = f; o.textContent = f;
+        if (f === cur) o.selected = true;
+        s.appendChild(o);
+      });
+    });
+  };
+
+  tb.appendChild(sel);
+  tb.appendChild(viewBtns);
+
+  const body = document.createElement('div');
+  body.style.cssText = 'display:flex;flex:1;min-height:0;min-width:0;overflow:hidden;';
+
+  const pathExplorer = document.createElement('div');
+  pathExplorer.className = 'hb-path-explorer';
+  pathExplorer.style.cssText = 'display:none;width:180px;flex-shrink:0;border-right:1px solid #e5e7eb;background:#fafbfc;flex-direction:column;overflow:hidden;';
+  pathExplorer.innerHTML = '<div style="padding:7px 10px;font-size:10px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #f3f4f6;background:#f8fafc;flex-shrink:0"><i class="fas fa-sitemap" style="margin-right:5px;color:#64748b"></i>Data Paths</div><div class="hb-pex-tree" style="flex:1;overflow-y:auto;padding:6px 8px;font-family:ui-monospace,Consolas,monospace;font-size:10px;line-height:1.8;color:#374151;"><div style="color:#9ca3af;font-size:10px;text-align:center;margin-top:16px">Select a node first</div></div>';
+  body.appendChild(pathExplorer);
+
+  const content = document.createElement('div');
+  content.className = 'hb-panel-content';
+  content.id = 'panel-content-' + i;
+  content.style.cssText = 'flex:1;overflow:hidden;min-height:0;min-width:0;position:relative;display:flex;flex-direction:column;';
+  body.appendChild(content);
+
+  wrap.appendChild(tb);
+  wrap.appendChild(chartOptsRow);
+  wrap.appendChild(body);
+  // Keep chartOptsRow in sync when the view button is toggled
+  wrap._syncChartOpts = function(v) {
+    chartOptsRow.style.display = v === 'charts' ? 'flex' : 'none';
+  };
+
+  //  DataTree: recursive lazy tree matching main app DataExplorer 
+  function buildDataTree(name, val, pathStr, selectedPaths, onToggle, depth) {
+    depth = depth || 0;
+    const isArr = Array.isArray(val);
+    const isObj = val && typeof val === 'object' && !isArr;
+    const canExpand = isArr || isObj;
+    let open = depth === 0; // root auto-open
+
+    const wrapper = document.createElement('div');
+    wrapper.style.paddingLeft = depth === 0 ? '0' : '14px';
+
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:4px;padding:2px 0;cursor:pointer;user-select:none;';
+
+    // Expand caret
+    const caret = document.createElement('span');
+    caret.style.cssText = 'width:12px;font-size:9px;color:#9ca3af;text-align:center;flex-shrink:0;';
+    caret.textContent = canExpand ? (open ? 'v' : '>') : ' ';
+
+    // Checkbox
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = selectedPaths.includes(pathStr);
+    cb._pathStr = pathStr;
+    cb.style.cssText = 'margin:0;cursor:pointer;flex-shrink:0;accent-color:#3b82f6;';
+    cb.onclick = function(e) { e.stopPropagation(); };
+    cb.onchange = function(e) { e.stopPropagation(); onToggle(pathStr, cb.checked); };
+
+    // Key label
+    const keySpan = document.createElement('span');
+    keySpan.style.cssText = 'font-weight:600;font-size:11px;color:' + (typeof name === 'number' ? '#6366f1' : '#334155') + ';';
+    keySpan.textContent = String(name);
+
+    // Value preview
+    const valSpan = document.createElement('span');
+    valSpan.style.cssText = 'font-size:10px;font-family:ui-monospace,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:110px;color:';
+    let valText, valColor;
+    if (val === null) { valText = 'null'; valColor = '#9ca3af'; }
+    else if (isArr) { valText = 'Array(' + val.length + ')'; valColor = '#8b5cf6'; }
+    else if (isObj) { valText = '{' + Object.keys(val).length + '}'; valColor = '#8b5cf6'; }
+    else if (typeof val === 'string') { valText = '"' + val.slice(0,40) + (val.length > 40 ? '...' : '') + '"'; valColor = '#059669'; }
+    else if (typeof val === 'number') { valText = String(val); valColor = '#2563eb'; }
+    else if (typeof val === 'boolean') { valText = String(val); valColor = '#d97706'; }
+    else { valText = String(val); valColor = '#374151'; }
+    valSpan.style.cssText += valColor + ';';
+    valSpan.textContent = valText;
+
+    row.appendChild(caret); row.appendChild(cb); row.appendChild(keySpan);
+    const colon = document.createElement('span'); colon.textContent = ':'; colon.style.cssText = 'color:#d1d5db;font-size:10px;';
+    row.appendChild(colon); row.appendChild(valSpan);
+
+    // Children container
+    const childContainer = document.createElement('div');
+    childContainer.style.cssText = 'border-left:1px solid #e5e7eb;margin-left:6px;display:' + (canExpand && open ? 'block' : 'none') + ';';
+
+    let childEntries = [];
+    let visibleCount = [5];
+
+    function renderChildren() {
+      childContainer.innerHTML = '';
+      const entries = isArr
+        ? val.slice(0, visibleCount[0]).map((v, j) => [j, v])
+        : Object.keys(val).slice(0, visibleCount[0]).map(k => [k, val[k]]);
+      const total = isArr ? val.length : Object.keys(val).length;
+      entries.forEach(function(entry) {
+        const k = entry[0]; const v = entry[1];
+        const childPath = pathStr ? pathStr + (isArr ? '[' + k + ']' : '.' + k) : String(k);
+        childContainer.appendChild(buildDataTree(k, v, childPath, selectedPaths, onToggle, depth + 1));
+      });
+      if (total > visibleCount[0]) {
+        const more = document.createElement('button');
+        more.textContent = 'Load next 5... (' + (total - visibleCount[0]) + ' remaining)';
+        more.style.cssText = 'margin-left:14px;margin-top:4px;padding:2px 8px;font-size:9px;font-weight:700;background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;border-radius:4px;cursor:pointer;display:block;';
+        more.onclick = function() { visibleCount[0] += 5; renderChildren(); };
+        childContainer.appendChild(more);
+      }
+    }
+
+    if (canExpand && open) renderChildren();
+
+    row.onclick = function() {
+      if (!canExpand) { onToggle(pathStr, !cb.checked); return; }
+      open = !open;
+      caret.textContent = open ? 'v' : '>';
+      childContainer.style.display = open ? 'block' : 'none';
+      if (open && childContainer.children.length === 0) renderChildren();
+    };
+
+    wrapper.appendChild(row);
+    if (canExpand) wrapper.appendChild(childContainer);
+    return wrapper;
+  }
+
+  wrap._refreshExplorer = function(data, forceRebuild) {
+    const treeEl = pathExplorer.querySelector('.hb-pex-tree');
+    if (!treeEl) return;
+    if (data == null) {
+      treeEl.innerHTML = '<div style="color:#9ca3af;font-size:10px;text-align:center;margin-top:16px">Select a node first</div>';
+      return;
+    }
+    // Update selected path checkboxes in existing tree without full rebuild
+    if (!forceRebuild && treeEl.children.length > 0 && treeEl.firstElementChild?.textContent !== 'Select a node first') {
+      treeEl.querySelectorAll('input[type=checkbox]').forEach(function(cb) {
+        cb.checked = (panel.selectedPaths || []).includes(cb._pathStr || '');
+      });
+      return;
+    }
+    treeEl.innerHTML = '';
+
+    // Header with count + clear button
+    const nodeDef = NODES.find(function(n) { return n.id === panel.nodeId; });
+    const cfgKey = panel.view === 'charts' ? 'chartConfig' : panel.view === 'tables' ? 'tableConfig' : 'mapConfig';
+    const staticSel = (nodeDef && nodeDef[cfgKey] && nodeDef[cfgKey].selectedPaths) || [];
+
+    // Ensure panel.selectedPaths is initialised from localStorage or static config
+    if (!panel.selectedPaths) {
+      try {
+        const stored = localStorage.getItem('hb_pwa_paths_' + panel.nodeId);
+        if (stored) {
+          panel.selectedPaths = JSON.parse(stored);
+        } else if (staticSel.length > 0) {
+          panel.selectedPaths = [...staticSel];
+        }
+      } catch {}
+    }
+
+    const selChips = document.createElement('div');
+    selChips.className = 'hb-pex-chips';
+    selChips.style.cssText = 'padding:4px 8px;display:flex;flex-wrap:wrap;gap:3px;border-bottom:1px solid #f3f4f6;flex-shrink:0;min-height:0;';
+    function rebuildChips() {
+      selChips.innerHTML = '';
+      if (!panel.selectedPaths || panel.selectedPaths.length === 0) {
+        selChips.innerHTML = '<span style="font-size:9px;color:#9ca3af;font-style:italic">No paths selected</span>';
+        return;
+      }
+      panel.selectedPaths.forEach(function(p) {
+        const chip = document.createElement('span');
+        chip.style.cssText = 'font-size:9px;font-family:ui-monospace,monospace;background:#dbeafe;color:#1d4ed8;border-radius:3px;padding:1px 5px;display:flex;align-items:center;gap:3px;';
+        chip.title = p;
+        const shortLabel = p.split('.').pop() || p || 'root';
+        chip.textContent = shortLabel;
+        const x = document.createElement('button');
+        x.textContent = 'x'; x.style.cssText = 'background:none;border:none;cursor:pointer;color:#3b82f6;font-size:8px;padding:0;line-height:1;';
+        x.onclick = function() { onToggle(p, false); };
+        chip.appendChild(x); selChips.appendChild(chip);
+      });
+      // Clear all button
+      const clr = document.createElement('button');
+      clr.textContent = 'Clear all'; clr.style.cssText = 'font-size:9px;padding:1px 5px;border-radius:3px;background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;cursor:pointer;font-weight:600;';
+      clr.onclick = function() { panel.selectedPaths = []; try { localStorage.removeItem('hb_pwa_paths_' + panel.nodeId); } catch {} rebuildChips(); rerender(); };
+      selChips.appendChild(clr);
+    }
+    rebuildChips();
+    treeEl.appendChild(selChips);
+
+    const infoBar = document.createElement('div');
+    infoBar.style.cssText = 'padding:4px 8px;font-size:9px;color:#1e40af;background:#eff6ff;border-bottom:1px solid #bfdbfe;flex-shrink:0;';
+    infoBar.innerHTML = '<i class="fas fa-info-circle" style="margin-right:3px"></i>Check arrays or fields to bind as chart/table data.';
+    treeEl.appendChild(infoBar);
+
+    const treeBody = document.createElement('div');
+    treeBody.style.cssText = 'flex:1;overflow-y:auto;padding:8px 10px;';
+    treeEl.appendChild(treeBody);
+
+    function rerender() {
+      destroyChart(i);
+      renderPanelContent(i, state.panels[i]);
+      rebuildChips();
+    }
+
+    function onToggle(pathStr, sel) {
+      const cur = panel.selectedPaths || [];
+      panel.selectedPaths = sel ? (cur.includes(pathStr) ? cur : [...cur, pathStr]) : cur.filter(function(x) { return x !== pathStr; });
+      try { localStorage.setItem('hb_pwa_paths_' + panel.nodeId, JSON.stringify(panel.selectedPaths)); } catch {}
+      // Sync sibling panels
+      state.panels.forEach(function(sp, si) {
+        if (si !== i && sp.nodeId === panel.nodeId && sp.view !== 'data' && sp.view !== 'maps') {
+          sp.selectedPaths = panel.selectedPaths;
+          renderPanelContent(si, sp);
+        }
+      });
+      rerender();
+    }
+
+    treeBody.appendChild(buildDataTree('root', data, '', panel.selectedPaths || [], onToggle, 0));
+  };
+
+  return wrap;
+}
+
+
+//  Render panel content 
+async function renderPanelContent(i, panel) {
+  const el = document.getElementById('panel-content-' + i);
+  if (!el) return;
+
+  if (panel.view === 'maps') { renderMap(i, el, panel); return; }
+  if (!panel.nodeId || panel.nodeId === 'ALL') { el.innerHTML = emptyState(panel.view); return; }
+
+  const data = await loadData(panel.nodeId);
+  if (!data) { el.innerHTML = emptyState(panel.view); return; }
+
+  // Refresh the path-explorer sidebar with the loaded data (no-op if explorer not open)
+  const _panelWrap = document.getElementById('panel-' + i);
+  if (_panelWrap?._refreshExplorer) _panelWrap._refreshExplorer(data, false);
+
+
+  if (maps[i])   { maps[i].remove();    delete maps[i]; }
+  destroyChart(i);
+
+  const nodeDef = NODES.find(n => n.id === panel.nodeId);
+  const cfgKey = panel.view === 'charts' ? 'chartConfig' : panel.view === 'tables' ? 'tableConfig' : null;
+  let parsedData = data;
+
+  // Prefer live user-selected paths (from Data Explorer checkboxes) over
+  // the static baked-in config. An explicitly empty selectedPaths array means
+  // the user has deselected everything  revert to raw data (don't fall through to staticPaths).
+  const livePaths = panel.selectedPaths; // undefined = never opened Explorer; [] = opened + cleared
+  const staticPaths = cfgKey && nodeDef?.[cfgKey]?.selectedPaths;
+  const hasLivePaths   = Array.isArray(livePaths)   && livePaths.length   > 0;
+  const hasStaticPaths = Array.isArray(staticPaths)  && staticPaths.length  > 0;
+  const liveWasOpened  = Array.isArray(livePaths); // Explorer was opened at some point
+  // Only use static paths if the user has NEVER opened the Explorer for this panel
+  const activePaths = hasLivePaths ? livePaths : (!liveWasOpened && hasStaticPaths ? staticPaths : null);
+
+  if (cfgKey && activePaths && activePaths.length > 0) {
+    if (activePaths.length === 1) {
+      // Single path selected: wrap in an object to preserve the field name (key).
+      // unwrapDataPWA will either pivot it (if primitive array) or unwrap it without losing the schema.
+      const val = typeof data === 'object' && data !== null ? getByPath(data, activePaths[0]) : undefined;
+      parsedData = val !== undefined ? { [activePaths[0]]: val } : null;
+    } else {
+      // Smarter path extraction for multiple paths:
+      //  - Paths that resolve to an array of objects  -> use as primary row data
+      //  - Paths that resolve to a scalar/primitive   -> collect as one summary row
+      //  - Mixed (array + scalars)                    -> scalars become extra columns on each array row
+      const extracted = {};
+      let primaryArray = null;
+      activePaths.forEach(function(p) {
+        const val = typeof data === 'object' && data !== null ? getByPath(data, p) : undefined;
+        // Use full path 'p' to avoid collisions (e.g. both having '.count')
+        if (Array.isArray(val) && val.length > 0 && typeof val[0] === 'object' && val[0] !== null) {
+          if (!primaryArray || val.length > primaryArray.length) primaryArray = val;
+        } else {
+          extracted[p] = (val !== undefined) ? val : null;
+        }
+      });
+      if (primaryArray) {
+        const extras = Object.keys(extracted);
+        parsedData = extras.length
+          ? primaryArray.map(function(row) { return Object.assign({}, row, extracted); })
+          : primaryArray;
+      } else if (Object.keys(extracted).length > 0) {
+        // If extracted contains arrays (e.g. ensemble prediction series), pass as object
+        // so unwrapDataPWA can zip them together. If strictly scalars, wrap in array for summary row.
+        const hasArrays = Object.values(extracted).some(v => Array.isArray(v));
+        parsedData = hasArrays ? extracted : [extracted];
+      }
+    }
+    // If data itself is already an array (not an object), keep it as-is
+    if (Array.isArray(data) && activePaths.length === 0) parsedData = data;
+  }
+
+  // Merge user's live chart-type / axis overrides (set via the opts row) into cfg
+  if (panel.view === 'charts' && panel._chartOverride && nodeDef) {
+    nodeDef.chartConfig = Object.assign({}, nodeDef.chartConfig || {}, panel._chartOverride);
+  }
+
+  // Populate X/Y axis dropdowns with ALL field names from the resolved data
+  const _panelWrap2 = document.getElementById('panel-' + i);
+  if (_panelWrap2 && _panelWrap2._updateChartOpts && panel.view === 'charts') {
+    try {
+      const sample = Array.isArray(parsedData) ? parsedData[0]
+        : (parsedData && typeof parsedData === 'object' ? parsedData : null);
+      // Include all fields that are numeric or date-like so the user can choose any axis
+      const fields = sample ? Object.keys(sample).filter(function(k) {
+        const v = sample[k];
+        return typeof v === 'number' || typeof v === 'string';
+      }) : [];
+      if (fields.length) _panelWrap2._updateChartOpts(fields);
+    } catch(e) {}
+  }
+
+  if (panel.view === 'charts') renderChart(i, el, parsedData);
+  else if (panel.view === 'tables') renderTable(i, el, parsedData);
+  else renderJsonExplorer(i, el, data);
+}
+
+//  Map 
+
+async function renderMap(i, el, panel) {
+  // Always destroy existing map instance before re-initialising to prevent
+  // Leaflet's "Map container is already initialized" error on view switches.
+  if (maps[i]) { try { maps[i].remove(); } catch(e) {} delete maps[i]; }
+  destroyChart(i);
+  // Bump the generation for this panel slot so in-flight callbacks from the
+  // previous renderMap call know to self-abort.
+  if (!window._hbMapGen) window._hbMapGen = {};
+  const _myGen = (window._hbMapGen[i] = (window._hbMapGen[i] || 0) + 1);
+  const _isStaleGen = () => window._hbMapGen[i] !== _myGen;
+  // Set el to flex-column upfront so the animation player bar (appended later)
+  // and the map div (flex:1) share the height correctly in both single/multi-frame cases.
+  el.style.display = 'flex';
+  el.style.flexDirection = 'column';
+  el.innerHTML = '<div id="hb-map-' + i + '" style="width:100%;flex:1;min-height:0"></div>';
+  const map = window.L.map('hb-map-' + i).setView([0,0], 2);
+  const nodeDef = NODES.find(n => n.id === panel.nodeId);
+  const mcfg = nodeDef ? nodeDef.mapConfig || {} : {};
+  const baseLayer = mcfg.baseLayer || "carto-light";
+  const markerColor = mcfg.markerColor || "#3b82f6";
+  const markerSize = mcfg.markerSize || 6;
+
+  let tileUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+  if (baseLayer === 'osm') tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+  if (baseLayer === 'esri-satellite') tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+  window.L.tileLayer(tileUrl, { maxZoom: 19 }).addTo(map);
+
+  let globalBounds = window.L.latLngBounds([]);
+  maps[i] = map;
+
+  const hoverTooltip = document.createElement('div');
+  hoverTooltip.style.cssText = 'position:absolute;z-index:1000;background:rgba(255,255,255,0.95);border:1px solid #e5e7eb;padding:4px 8px;border-radius:4px;font-family:"Inter",sans-serif;font-size:12px;font-weight:600;pointer-events:none;display:none;box-shadow:0 2px 4px rgba(0,0,0,0.1);color:#374151;';
+  el.appendChild(hoverTooltip);
+
+  map.on('mouseout', () => { hoverTooltip.style.display = 'none'; });
+
+  map.on('mousemove', (e) => {
+    if (!map._activeGeoRaster) {
+      hoverTooltip.style.display = 'none';
+      return;
+    }
+    const { lat, lng } = e.latlng;
+    const gr = map._activeGeoRaster;
+    let val = null;
+
+    if (typeof gr.getValueAtLatLng === 'function') {
+      try {
+        const result = gr.getValueAtLatLng(lat, lng);
+        val = Array.isArray(result) ? result[0] : result;
+      } catch(err) {}
+    }
+
+    if (val === null && gr.values && gr.xmin !== undefined) {
+      const x = Math.floor((lng - gr.xmin) / gr.pixelWidth);
+      const y = Math.floor((gr.ymax - lat) / gr.pixelHeight);
+      if (x >= 0 && x < gr.width && y >= 0 && y < gr.height) {
+        val = gr.values[0][y][x];
+      }
+    }
+
+    if (val !== null && val !== undefined && val !== gr.noDataValue && !isNaN(val) && val > -900) {
+      hoverTooltip.style.display = 'block';
+      hoverTooltip.style.left = (e.containerPoint.x + 15) + 'px';
+      hoverTooltip.style.top = (e.containerPoint.y + 15) + 'px';
+      hoverTooltip.innerHTML = `<span style="color:#6b7280;font-weight:400;margin-right:4px">Value</span><span style="color:#3b82f6">${val % 1 === 0 ? val : val.toFixed(4)}</span>`;
+    } else {
+      hoverTooltip.style.display = 'none';
+    }
+  });
+
+  if (panel.nodeId) {
+    let colorRange = null;
+    // Tracks whether an animation player bar has been appended, so the legend
+    // can be offset above it (player bar is ~36px tall + 8px gap = 44px).
+    let _hasPlayer = false;
+    const _legendBottom = () => _hasPlayer ? '52px' : '28px';
+    const renderLegend = () => {
+      let leg = el.querySelector('.hb-map-legend');
+      if (!colorRange) {
+        if (leg) leg.remove();
+        return;
+      }
+      if (!leg) {
+        leg = document.createElement('div');
+        leg.className = 'hb-map-legend';
+        leg.style.cssText = 'position:absolute;bottom:' + _legendBottom() + ';right:10px;z-index:800;background:rgba(255,255,255,0.92);backdrop-filter:blur(4px);border:1px solid #e5e7eb;border-radius:8px;padding:8px 10px;box-shadow:0 2px 8px rgba(0,0,0,0.12);min-width:120px;pointer-events:none;font-family:"Inter",sans-serif;';
+        el.appendChild(leg);
+      } else {
+        leg.style.bottom = _legendBottom();
+      }
+      leg.innerHTML = `
+        <div style="height:10px;border-radius:4px;background:${getPaletteGradient(colorRange.palette)};margin-bottom:4px"></div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#374151;font-weight:600">
+          <span>${colorRange.min % 1 === 0 ? colorRange.min : colorRange.min.toFixed(3)}</span>
+          <span style="color:#6b7280;font-weight:400;font-size:9px">value</span>
+          <span>${colorRange.max % 1 === 0 ? colorRange.max : colorRange.max.toFixed(3)}</span>
+        </div>
+        ${colorRange.noData !== null ? '<div style="font-size:9px;color:#9ca3af;margin-top:3px;text-align:center">NoData = ' + colorRange.noData + '</div>' : ''}
+      `;
+    };
+
+    if (!window._georasterCache) {
+      const maxCacheSize = 20;
+      window._georasterCache = {
+        cache: new Map(),
+        has: function(k) { return this.cache.has(k); },
+        get: function(k) { 
+          const v = this.cache.get(k); 
+          if (v) { this.cache.delete(k); this.cache.set(k, v); }
+          return v; 
+        },
+        set: function(k, v) { 
+          this.cache.delete(k); 
+          this.cache.set(k, v); 
+          if (this.cache.size > maxCacheSize) {
+             const firstKey = this.cache.keys().next().value;
+             this.cache.delete(firstKey);
+          }
+        }
+      };
+    }
+
+    const plotLayer = (data, cb) => {
+      // Capture the generation at call time  if the map is torn down and
+      // re-initialised before the async parseGeoraster resolves, discard.
+      const _callGen = window._hbMapGen[i];
+      const _cbGuarded = (lObj, bounds, gr) => {
+        if (window._hbMapGen[i] !== _callGen) return; // stale  map was replaced
+        if (cb) cb(lObj, bounds, gr);
+      };
+      try {
+        let bufferToParse = null;
+        if (data instanceof ArrayBuffer) {
+           bufferToParse = data.slice(0);
+        } else if (data instanceof Uint8Array) {
+           bufferToParse = data.slice().buffer;
+        } else if (Array.isArray(data) && typeof data[0] === 'number') {
+           bufferToParse = new Uint8Array(data).buffer;
+        } else if (data && typeof data === 'object' && data.type === 'Buffer' && Array.isArray(data.data)) {
+           bufferToParse = new Uint8Array(data.data).buffer;
+        }
+
+        
+        const finalizeGeoRaster = (georaster) => {
+           console.log("HydroBlox PWA: finalizeGeoRaster called. Success:", !!georaster);
+           if (georaster) window._georasterCache.set(data, georaster);
+           if (!georaster) {
+             if (cb) _cbGuarded(null, null);
+             return;
+           }
+           const { min, max } = safeMinMax(georaster);
+           let palette = mcfg.rasterPalette || "auto";
+           if (palette === "auto") {
+             if (max > 5000 && min >= 0) palette = "ocean";
+             else if (Math.abs(min) < 1 && Math.abs(max - 255) < 5) palette = "grayscale";
+             else if (max <= 360 && min >= -1) palette = "hsv";
+             else palette = "viridis";
+           }
+           colorRange = { min, max, noData: georaster.noDataValue ?? null, palette };
+           const range = max - min;
+           
+           const colorFn = (values) => {
+             const v = values[0];
+             if (v === undefined || isNaN(v) || v === georaster.noDataValue || v <= -900) return null;
+             const pct = range === 0 ? 0 : Math.max(0, Math.min(1, (v - min) / range));
+             if (palette === "ocean") {
+               if (v < (max * 0.005)) return null;
+               const logV = Math.max(0, Math.log10(v));
+               const logMax = Math.log10(Math.max(1, max));
+               const intensity = Math.min(255, Math.floor(100 + (logV / logMax) * 155));
+               return `rgb(0, ${Math.floor(intensity * 0.3)}, ${intensity})`;
+             } else if (palette === "grayscale") {
+               const val = Math.max(0, Math.min(255, Math.floor(v)));
+               return `rgb(${val},${val},${val})`;
+             } else if (palette === "hsv") {
+               if (v <= 0) return null;
+               return `hsl(${Math.floor((v / Math.max(1, max)) * 360)}, 100%, 50%)`;
+             } else if (palette === "terrain") {
+               if (pct < 0.25) return "rgba(59,130,246,0.8)";
+               if (pct < 0.5) return "rgba(34,197,94,0.8)";
+               if (pct < 0.75) return "rgba(217,119,6,0.8)";
+               return "rgba(241,245,249,0.9)";
+             } else if (palette === "plasma") {
+               if (pct < 0.25) return "rgba(13,8,135,0.85)";
+               if (pct < 0.5) return "rgba(126,3,168,0.85)";
+               if (pct < 0.75) return "rgba(204,71,120,0.85)";
+               return "rgba(248,149,64,0.85)";
+             } else if (palette === "magma") {
+               if (pct < 0.25) return "rgba(0,0,100,0.85)";
+               if (pct < 0.5) return "rgba(81,18,124,0.85)";
+               if (pct < 0.75) return "rgba(182,54,121,0.85)";
+               return "rgba(251,136,97,0.85)";
+             }
+             if (pct < 0.25) return "rgba(68,1,84,0.85)";
+             if (pct < 0.5) return "rgba(59,82,139,0.85)";
+             if (pct < 0.75) return "rgba(33,145,140,0.85)";
+             return "rgba(94,201,98,0.85)";
+           };
+
+           const layer = new window.GeoRasterLayer({ georaster, opacity: 0.8, resolution: 128, pixelValuesToColorFn: colorFn });
+           if (cb) {
+             // Let the callback control layer insertion so it can atomically
+             // remove the old frame before adding the new one.
+             _cbGuarded(layer, layer.getBounds(), georaster);
+           } else {
+             layer.addTo(map);
+             map._activeGeoRaster = georaster;
+             renderLegend();
+             globalBounds.extend(layer.getBounds());
+             map.fitBounds(globalBounds, { padding: [20, 20] });
+           }
+        };
+
+        if (window._georasterCache.has(data)) {
+          const cached = window._georasterCache.get(data);
+          if (cached) {
+            console.log("HydroBlox PWA: GeoRaster Cache HIT");
+            finalizeGeoRaster(cached);
+            return;
+          }
+        }
+        console.log("HydroBlox PWA: GeoRaster Cache MISS");
+
+        if (bufferToParse) {
+          const view = new Uint8Array(bufferToParse);
+          if (view.length >= 2 && view[0] === 0x1f && view[1] === 0x8b && typeof window.pako !== 'undefined') {
+            bufferToParse = window.pako.inflate(view).buffer;
+          }
+          if (typeof window.parseGeoraster !== 'undefined') {
+            window.parseGeoraster(bufferToParse).then(finalizeGeoRaster).catch(()=>{ _cbGuarded(null, null); });
+          } else {
+            _cbGuarded(null, null);
+          }
+          return;
+        }
+
+        if (typeof data === 'object' && data !== null && 'values' in data && 'xmin' in data) {
+          if (data.ymax === undefined && data.ymin !== undefined && data.height && data.pixelHeight) {
+            data.ymax = data.ymin + (data.height * data.pixelHeight);
+          }
+          if (data.xmax === undefined && data.xmin !== undefined && data.width && data.pixelWidth) {
+            data.xmax = data.xmin + (data.width * data.pixelWidth);
+          }
+          let geodata = data.values;
+          if (geodata.length > 0 && geodata[0].length === data.width * data.height) {
+            const unflattenedBands = [];
+            for (let b = 0; b < geodata.length; b++) {
+              const flat = geodata[b];
+              const rows = [];
+              for (let y = 0; y < data.height; y++) {
+                rows.push(flat.subarray ? flat.subarray(y * data.width, (y + 1) * data.width) : flat.slice(y * data.width, (y + 1) * data.width));
+              }
+              unflattenedBands.push(rows);
+            }
+            geodata = unflattenedBands;
+          }
+          if (typeof window.parseGeoraster !== 'undefined') {
+            window.parseGeoraster(geodata, data).then(finalizeGeoRaster).catch(()=>{ if (cb) cb(null, null); });
+          } else {
+            if (cb) cb(null, null);
+          }
+          return;
+        }
+
+        const gj = unwrapGeoJSONPWA(data);
+        if (gj && Array.isArray(gj) && gj.length && typeof gj[0] === 'object' && ('lat' in gj[0] || 'y' in gj[0] || 'latitude' in gj[0])) {
+          const layer = L.featureGroup(gj.map(p => {
+             const lat = p.lat || p.latitude || p.y;
+             const lng = p.lon || p.longitude || p.lng || p.x;
+             const m = L.circleMarker([lat, lng], { radius: markerSize, fillColor: markerColor, color: '#ffffff', weight: 1.5, opacity: 1, fillOpacity: 0.85 });
+             m.bindPopup('<pre style="font-size:10px;max-height:200px;overflow:auto">' + JSON.stringify(p, null, 2) + '</pre>');
+             return m;
+          })).addTo(map);
+          if (cb) _cbGuarded(layer, layer.getBounds());
+          else {
+            globalBounds.extend(layer.getBounds());
+            map.fitBounds(globalBounds, { padding:[20,20] });
+          }
+        } else if (gj && (gj.type === 'FeatureCollection' || gj.type === 'Feature' || gj.features)) {
+          const layer = L.geoJSON(gj, {
+            pointToLayer: (feat, latlng) => {
+              return L.circleMarker(latlng, { radius: markerSize, fillColor: markerColor, color: '#ffffff', weight: 1.5, opacity: 1, fillOpacity: 0.85 });
+            },
+            onEachFeature: (feat, layer) => {
+              if (feat.properties) {
+                layer.bindPopup('<pre style="font-size:10px;max-height:200px;overflow:auto">' +
+                  JSON.stringify(feat.properties, null, 2) + '</pre>');
+              }
+            },
+          }).addTo(map);
+          if (cb) {
+             if (layer.getBounds && layer.getBounds().isValid()) _cbGuarded(layer, layer.getBounds());
+             else _cbGuarded(layer, window.L.latLngBounds([]));
+          } else {
+            if (layer.getBounds && layer.getBounds().isValid()) globalBounds.extend(layer.getBounds());
+            map.fitBounds(globalBounds, { padding:[20,20] });
+          }
+        } else {
+          _cbGuarded(null, null);
+        }
+      } catch (err) {
+        _cbGuarded(null, null);
+      }
+    };
+
+    if (panel.nodeId === 'ALL') {
+      NODES.forEach(n => {
+        loadData(n.id).then(data => { if (data) plotLayer(data); });
+      });
+    } else {
+      loadData(panel.nodeId).then(data => { 
+        if (!data) return;
+        const _panelWrap = document.getElementById('panel-' + i);
+        if (_panelWrap?._refreshExplorer) _panelWrap._refreshExplorer(data, false);
+
+        const nodeDef = NODES.find(n => n.id === panel.nodeId);
+        const staticPaths = nodeDef?.mapConfig?.selectedPaths;
+        const livePaths = panel.selectedPaths;
+        const liveWasOpened = Array.isArray(livePaths);
+        const activePaths = liveWasOpened ? livePaths : (staticPaths && staticPaths.length > 0 ? staticPaths : null);
+        
+        if (activePaths !== null) {
+          if (activePaths.length === 0) {
+            data = null;
+          } else {
+            // Resolve each path; keep renderable objects (buffers, GeoJSON, raster-grids) at top level.
+            // Collect results: if a single renderable is found, use it directly; otherwise build array.
+            const extractedItems = [];
+            activePaths.forEach(function(p) {
+              const val = (typeof data === 'object' && data !== null) ? getByPath(data, p) : undefined;
+              if (val !== undefined && val !== null) extractedItems.push(val);
+            });
+            if (extractedItems.length === 1) {
+              data = extractedItems[0]; // single renderable: pass through without wrapping
+            } else if (extractedItems.length > 1) {
+              data = extractedItems;    // multiple: treat as temporal sequence
+            } else {
+              data = null;
+            }
+          }
+        }
+        
+        if (!data) return;        
+        const isGeoJSON = (obj) => obj && typeof obj === 'object' && (obj.type === 'FeatureCollection' || obj.type === 'Feature' || (Array.isArray(obj) && obj.length > 0 && obj[0].type === 'Feature'));
+        const isRaster = (obj) => obj instanceof ArrayBuffer || (obj && typeof obj === 'object' && obj.type === 'Buffer' && Array.isArray(obj.data)) || (Array.isArray(obj) && typeof obj[0] === 'number') || (typeof obj === 'object' && 'values' in obj && 'xmin' in obj);
+
+        const flattenMapData = (obj) => {
+            if (!obj) return [];
+            if (isGeoJSON(obj) || isRaster(obj)) return [obj];
+            if (Array.isArray(obj)) return obj.flatMap(flattenMapData);
+            if (typeof obj === 'object') return Object.values(obj).flatMap(flattenMapData);
+            return [];
+        };
+
+        const allItems = flattenMapData(data);
+        const rasters = allItems.filter(isRaster);
+        const vectors = allItems.filter(isGeoJSON);
+
+        let temporalSequence = null;
+        let staticLayers = [...vectors];
+
+        if (rasters.length > 1) {
+          temporalSequence = rasters;
+        } else if (rasters.length === 1) {
+          staticLayers.push(rasters[0]);
+        }
+
+          staticLayers.forEach(l => plotLayer(l));
+
+          if (temporalSequence) {
+            // Frames: if each element is already a renderable layer (buffer/GeoJSON object),
+            // use them directly. flattenMapData is only for digging into nested wrappers.
+            const isDirectlyRenderable = (x) => {
+              if (!x) return false;
+              if (x instanceof ArrayBuffer || x instanceof Uint8Array) return true;
+              if (x && typeof x === 'object' && (x.type === 'Buffer' && Array.isArray(x.data))) return true;
+              if (x && typeof x === 'object' && 'values' in x && 'xmin' in x) return true;
+              if (x && typeof x === 'object' && (x.type === 'FeatureCollection' || x.type === 'Feature' || x.features)) return true;
+              if (Array.isArray(x) && x.length > 0 && typeof x[0] === 'number') return true;
+              if (Array.isArray(x) && x.length > 0 && (x[0].lat || x[0].latitude || x[0].y)) return true;
+              return false;
+            };
+            const frames = temporalSequence.every(isDirectlyRenderable)
+              ? temporalSequence
+              : flattenMapData(temporalSequence);
+            if (frames.length > 1) {
+              let activeLayer = null;
+              let activeBounds = null;
+              // Use a single shared counter  each onFrame call captures its own snapshot
+              let latestRequestId = 0;
+              const labels = frames.map((l, idx) => {
+                if (l && typeof l === 'object' && !Array.isArray(l)) {
+                  if (l.date) return String(l.date);
+                  if (l.event_start) return String(l.event_start);
+                  if (l.time) return String(l.time);
+                  if (l.timestamp) return String(l.timestamp);
+                }
+                return 'Frame ' + (idx + 1);
+              });
+
+              // Build the player bar  it will be appended AFTER the map div so
+              // the map fills all available space and the bar docks to the bottom.
+              const playerUI = buildAnimationPlayer(frames.length, 0, async (fIdx) => {
+                const myRequestId = ++latestRequestId;
+                return new Promise(resolve => {
+                  console.log("HydroBlox PWA: Requesting frame", fIdx, "with request ID", myRequestId);
+                  plotLayer(frames[fIdx], (lObj, bounds, georaster) => {
+                    console.log("HydroBlox PWA: Frame", fIdx, "resolved for request ID", myRequestId, "lObj:", !!lObj);
+                    // Stale frame  a newer request has already been issued
+                    if (myRequestId !== latestRequestId) { 
+                      console.log("HydroBlox PWA: Discarding stale frame request ID", myRequestId);
+                      resolve(); 
+                      return; 
+                    }
+                    // Atomically swap: remove old BEFORE adding new
+                    if (activeLayer) {
+                      try { map.removeLayer(activeLayer); } catch(e) {}
+                      activeLayer = null;
+                    }
+                    if (lObj) {
+                      lObj.addTo(map);
+                      if (georaster) { map._activeGeoRaster = georaster; renderLegend(); }
+                    }
+                    activeLayer = lObj || null;
+                    if (!activeBounds && bounds && bounds.isValid && bounds.isValid()) {
+                      activeBounds = bounds;
+                      map.fitBounds(bounds, { padding: [20, 20] });
+                    }
+                    setTimeout(() => { if (map) map.invalidateSize(); }, 10);
+                    resolve();
+                  });
+                });
+              }, labels);
+
+              // Append player bar AFTER the map so it docks at the bottom
+              el.appendChild(playerUI.el);
+              // Mark that a player bar is now present so the legend floats above it
+              _hasPlayer = true;
+
+              // Ensure the map div still fills available space (el is already flex-column)
+              const mapContainer = document.getElementById('hb-map-' + i);
+              if (mapContainer) {
+                mapContainer.style.flex = '1';
+                mapContainer.style.minHeight = '0';
+              }
+
+              // Two-phase invalidation: once immediately so Leaflet knows its size,
+              // then again after the first frame resolves (raster parse can take >80ms).
+              map.invalidateSize();
+              setTimeout(async () => {
+                if (_isStaleGen()) return; // panel was re-rendered while we waited
+                map.invalidateSize();
+                await playerUI.setFrame(0);
+                // After the first frame is painted, nudge Leaflet once more so
+                // the GeoRasterLayer canvas is correctly sized in all layouts.
+                setTimeout(() => { if (!_isStaleGen()) map.invalidateSize(); }, 50);
+              }, 120);
+            } else {
+              // Only one frame  just render it directly (no animation needed)
+              if (frames.length === 1) { plotLayer(frames[0]); } else { frames.forEach(l => plotLayer(l)); }
+            }
+          }
+      });
+    }
+  }
+  setTimeout(() => map.invalidateSize(), 120);
+}
+
+//  Chart 
+//  Utilities & Data Formatting 
+function getByPath(obj, pathStr) {
+  if (!pathStr) return obj;
+  const parts = pathStr.replace(/[(w+)]/g, '.$1').replace(/^./, '').split('.');
+  return parts.reduce((acc, part) => (acc === null || acc === undefined ? undefined : acc[part]), obj);
+}
+
+function unwrapGeoJSONPWA(raw) {
+  if (raw === null || raw === undefined) return raw;
+  let obj = typeof raw === "string" ? JSON.parse(raw) : raw;
+  if (Array.isArray(obj)) return obj;
+  if (typeof obj === "object") {
+    if (obj.type === "FeatureCollection" || obj.type === "Feature" || obj.features) return obj;
+    if ("_vizData" in obj) return obj._vizData;
+    if ("data" in obj && (obj.data.type === "FeatureCollection" || Array.isArray(obj.data) || obj.data.features)) return obj.data;
+    if ("results" in obj && Array.isArray(obj.results)) return obj.results;
+  }
+  return obj;
+}
+
+function unwrapDataPWA(raw) {
+  // First, recursively decode any base64 encoded buffers
+  function decodeB64(obj) {
+    if (obj === null || obj === undefined) return obj;
+    if (typeof obj === 'object' && obj !== null) {
+      if (obj instanceof ArrayBuffer || obj instanceof Uint8Array || obj instanceof Date) return obj;
+      if (obj.__hb_type === 'b64' && typeof obj.data === 'string') {
+        const binaryString = window.atob(obj.data);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
+        return bytes.buffer;
+      }
+      if (Array.isArray(obj)) return obj.map(decodeB64);
+      const res = {};
+      for (const k in obj) res[k] = decodeB64(obj[k]);
+      return res;
+    }
+    return obj;
+  }
+  
+  let decoded = decodeB64(raw);
+
+  if (decoded === null || decoded === undefined) return decoded;
+  if (Array.isArray(decoded)) {
+    if (decoded.length > 0 && typeof decoded[0] === 'object' && decoded[0] !== null && decoded[0].type === 'Feature' && 'properties' in decoded[0]) {
+      decoded = decoded.map(f => f.properties ?? f);
+    }
+    if (decoded.length > 0 && Array.isArray(decoded[0])) {
+      if (decoded.length === 1) return decoded.flat();
+      if (typeof decoded[0][0] === "object") {
+        const flattened = [];
+        for (let i = 0; i < decoded.length; i++) {
+          const inner = decoded[i];
+          if (Array.isArray(inner)) {
+            for (const pt of inner) {
+               if (typeof pt === "object" && pt !== null) {
+                 flattened.push({ ...pt, _seriesIndex: 'Series ' + (i + 1) });
+               }
+            }
+          } else if (typeof inner === "object" && inner !== null) {
+            flattened.push(inner);
+          }
+        }
+        return flattened;
+      } else {
+        // Array of primitive arrays (e.g. 2D matrix of ensemble predictions)
+        const maxLen = Math.max(...decoded.map(arr => Array.isArray(arr) ? arr.length : 0));
+        return Array.from({ length: maxLen }, (_, i) => {
+          const row = { index: i };
+          decoded.forEach((arr, seriesIdx) => {
+            if (Array.isArray(arr)) {
+              row['Series ' + (seriesIdx + 1)] = arr[i] ?? null;
+            }
+          });
+          return row;
+        });
+      }
+    }
+    return decoded;
+  }
+  if (typeof decoded === "object") {
+    const obj = decoded;
+    if (Array.isArray(obj.value))       return obj.value;
+    if (Array.isArray(obj.timeseries))  return obj.timeseries;
+    if (Array.isArray(obj.data))        return obj.data;
+    if (Array.isArray(obj.features))    return obj.features.map(f => f.properties ?? f);
+    if (Array.isArray(obj.results))     return obj.results;
+    if (Array.isArray(obj.records))     return obj.records;
+    const keys = Object.keys(obj);
+    const vals = Object.values(obj);
+    const arrayKeys = keys.filter(k => Array.isArray(obj[k]));
+    const primitiveArrayKeys = arrayKeys.filter(k => obj[k].length === 0 || typeof obj[k][0] !== 'object');
+    if (primitiveArrayKeys.length > 0 && primitiveArrayKeys.length === arrayKeys.length) {
+      const maxLen = Math.max(...primitiveArrayKeys.map(k => obj[k].length));
+      return Array.from({ length: maxLen }, (_, i) => {
+        const row = { index: i };
+        primitiveArrayKeys.forEach(k => { row[k] = obj[k][i] ?? null; });
+        keys.forEach(k => { if (!arrayKeys.includes(k)) row[k] = obj[k]; });
+        return row;
+      });
+    }
+    let bestArray = null;
+    for (const v of vals) {
+      if (Array.isArray(v) && v.length > 0 && typeof v[0] === "object" && v[0] !== null && !Array.isArray(v[0]) &&
+        (bestArray === null || v.length > bestArray.length)
+      ) {
+        bestArray = v;
+      }
+    }
+    if (bestArray) return bestArray;
+
+    // combinedData: wrapper object whose values are each a dataset (multi-series or named result)
+    if (keys.length > 0 && vals.some(v => typeof v === 'object' && v !== null)) {
+      const allUnwrapped = [];
+      for (let i = 0; i < vals.length; i++) {
+        const inner = vals[i];
+        if (typeof inner === 'object' && inner !== null) {
+          const innerUnwrapped = unwrapDataPWA(inner);
+          if (Array.isArray(innerUnwrapped) && innerUnwrapped.length > 0) {
+            if (keys.length === 1) {
+              // Single outer key: return the inner array as-is WITHOUT _seriesIndex tagging.
+              // This preserves field names (rain_total, peak_flow, etc.) that chartConfig.xKey/yKey reference.
+              return innerUnwrapped;
+            }
+            allUnwrapped.push(...innerUnwrapped.map((item, idx) => (
+              typeof item === "object" && item !== null
+                ? { index: idx, ...item, _seriesIndex: keys[i] }
+                : { index: idx, value: item, _seriesIndex: keys[i] }
+            )));
+          } else if (innerUnwrapped) {
+            allUnwrapped.push(innerUnwrapped);
+          }
+        }
+      }
+      if (allUnwrapped.length > 0) return allUnwrapped;
+    }
+
+    const entries = Object.entries(decoded);
+    if (entries.length > 0 && entries.every(([,v]) => typeof v !== 'object')) {
+      // All primitive values: keep as ONE summary row, preserving field names.
+      // Do NOT convert to [{key,value}] pairs — that destroys the schema the chartConfig needs.
+      return [Object.fromEntries(entries)];
+    }
+  }
+  return decoded;
+}
+
+function applyGroupBy(rows, xKey, groupBy, valueKey) {
+  const groups = Array.from(new Set(rows.map(r => String(r[groupBy] ?? ""))));
+  const pivotMap = new Map();
+  for (const row of rows) {
+    const xVal = String(row[xKey] ?? "");
+    if (!pivotMap.has(xVal)) pivotMap.set(xVal, { [xKey]: row[xKey] });
+    const gr = String(row[groupBy] ?? "");
+    let v = valueKey ? row[valueKey] : undefined;
+    if (v === undefined) {
+      for (const [k, val] of Object.entries(row)) {
+        if (k !== xKey && k !== groupBy && typeof val === "number") { v = val; break; }
+      }
+    }
+    pivotMap.get(xVal)[gr] = v ?? null;
+  }
+  return { rows: Array.from(pivotMap.values()), groups };
+}
+
+function normalizeDataPWA(raw, cfg) {
+  let data = unwrapDataPWA(raw);
+  if (Array.isArray(data) && data.length > 0 && typeof data[0] === "number") {
+    data = data.map((v, i) => ({ index: i, value: v }));
+  }
+  if (!Array.isArray(data) || data.length === 0) {
+    return { rows: [], xKey: cfg?.xKey || "index", seriesKeys: [], colors: [], labels: {} };
+  }
+
+  let rows = data;
+  const xHint = cfg?.xKey || undefined;
+  const groupByField = cfg?.groupBy || cfg?.colorKey;
+
+  let sample = rows[0] || {};
+  if (xHint && !(xHint in sample)) {
+    const bs = rows.find(r => xHint in r);
+    if (bs) sample = bs;
+  }
+  if (groupByField && !(groupByField in sample)) {
+    const bs = rows.find(r => groupByField in r);
+    if (bs) sample = bs;
+  }
+
+  const keys = Object.keys(sample);
+  // Strict spec adherence: only use xHint if found in ANY row; never silently discard it.
+  const xHintInData = xHint && rows.some(r => xHint in r);
+  let xKey = xHintInData ? xHint : (
+    keys.find(k => /date|time|datetime|timestamp|year|month|day/i.test(k)) ||
+    keys.find(k => /^(index|i|x|id|name|label|site|station|location|region)$/i.test(k)) ||
+    keys[0] || 'index'
+  );
+
+  let groups = null;
+  const cfgSeries = cfg?.series ?? [];
+  // When xKey AND yKey are both explicitly specified in cfg AND present in rows,
+  // the chartConfig spec takes priority: skip any _seriesIndex pivot so the raw
+  // rows (e.g. 918 scatter points) are passed through intact.
+  const hasExplicitAxes = cfg?.xKey && cfg?.yKey &&
+    rows.some(r => cfg.xKey in r) && rows.some(r => cfg.yKey in r);
+  if (!hasExplicitAxes && groupByField && rows.some(r => groupByField in r)) {
+    const pivot = applyGroupBy(rows, xKey, groupByField, cfgSeries[0]?.key || cfg?.yKey);
+    rows = pivot.rows;
+    groups = pivot.groups;
+  } else if (!hasExplicitAxes && rows.some(r => "_seriesIndex" in r)) {
+    const pivot = applyGroupBy(rows, xKey, "_seriesIndex", cfgSeries[0]?.key || cfg?.yKey);
+    rows = pivot.rows;
+    groups = pivot.groups;
+  }
+
+  let seriesKeys;
+  if (groups) {
+    seriesKeys = groups;
+  } else if (cfgSeries.length > 0 && cfgSeries.some(s => rows.some(r => s.key in r))) {
+    seriesKeys = cfgSeries.map(s => s.key).filter(k => rows.some(r => k in r));
+  } else if (cfg?.yKey && rows.some(r => cfg.yKey in r)) {
+    seriesKeys = [cfg.yKey];
+  } else {
+    const numKeys = new Set();
+    rows.forEach(r => Object.keys(r).forEach(k => {
+      if (k !== xKey && typeof r[k] === "number") numKeys.add(k);
+    }));
+    seriesKeys = Array.from(numKeys);
+    if (seriesKeys.length === 0 && rows.some(r => "value" in r)) seriesKeys = ["value"];
+  }
+
+  const PALETTE = ['#334155','#2563eb','#16a34a','#dc2626','#d97706','#7c3aed','#0891b2','#be185d','#65a30d','#ea580c'];
+  const colors = seriesKeys.map((k, i) => (cfgSeries.find(s => s.key === k)?.color ?? PALETTE[i % PALETTE.length]));
+  const labels = cfgSeries.reduce ? cfgSeries.reduce((acc,s)=>({...acc,[s.key]:s.label}),{}) : {};
+  const statPalette = (cfg && cfg.statConfig && cfg.statConfig.palette && cfg.statConfig.palette.length > 0) ? cfg.statConfig.palette : null;
+
+  return { rows, xKey, seriesKeys, colors, labels, statPalette };
+}
+
+function renderChart(i, el, data, _cfg) {
+  var panel = state.panels[i];
+  var nodeId = panel.nodeId;
+  var nodeDef = NODES.find(function(n) { return n.id === nodeId; });
+  var cfg = _cfg || (nodeDef && nodeDef.chartConfig) || {};
+  // NOTE: path filtering is already done in renderPanelContent  do NOT re-filter here.
+
+  var nd = normalizeDataPWA(data, cfg);
+  var rows = nd.rows, xKey = nd.xKey, seriesKeys = nd.seriesKeys, colors = nd.colors, labels = nd.labels, statPalette = nd.statPalette;
+  if (!rows.length) { el.innerHTML = emptyState('charts'); return; }
+
+  var chartType = cfg.type || 'line';
+  var showLeg   = cfg.showLegend !== false;
+  var smooth    = cfg.smoothCurves !== false;
+  var isArea    = chartType === 'area';
+
+  // Destroy previous D3 chart if any
+  if (charts[i]) { try { if (charts[i]._cleanup) charts[i]._cleanup(); } catch(e) {} delete charts[i]; }
+
+  el.innerHTML = '';
+  if (cfg.title || (nodeDef && nodeDef.name)) {
+    var titleDiv = document.createElement('div');
+    titleDiv.style.cssText = 'padding:10px 16px 2px;font-weight:700;font-size:12px;color:#111827;flex-shrink:0;font-family:Inter,sans-serif;';
+    titleDiv.textContent = cfg.title || (nodeDef && nodeDef.name) || '';
+    el.appendChild(titleDiv);
+  }
+  var svgContainer = document.createElement('div');
+  svgContainer.style.cssText = 'flex:1;min-height:0;overflow:hidden;width:100%;position:relative;';
+  el.appendChild(svgContainer);
+
+  var PALETTE = (statPalette && statPalette.length) ? statPalette : ['#2563eb','#16a34a','#dc2626','#d97706','#7c3aed','#0891b2','#be185d','#334155','#65a30d','#ea580c'];
+  var d3 = window.d3;
+  if (!d3) { el.innerHTML = emptyState('charts'); return; }
+
+  function makeTip() {
+    return d3.select(svgContainer).append('div')
+      .style('position','absolute').style('pointer-events','none')
+      .style('background','#fff').style('border','1px solid #e5e7eb')
+      .style('border-radius','8px').style('padding','8px 12px')
+      .style('font-size','12px').style('color','#374151')
+      .style('box-shadow','0 4px 12px rgba(0,0,0,0.08)')
+      .style('opacity',0).style('z-index',999).style('transition','opacity .1s');
+  }
+  function moveTip(tip, event) {
+    var rect = svgContainer.getBoundingClientRect();
+    tip.style('left', (event.clientX - rect.left + 12) + 'px').style('top', (event.clientY - rect.top - 36) + 'px');
+  }
+
+  function draw() {
+    svgContainer.innerHTML = '';
+    var W = svgContainer.clientWidth || 400;
+    var H = svgContainer.clientHeight || 300;
+    var mb = { top: 12, right: showLeg ? 120 : 16, bottom: 40, left: 54 };
+    var iw = Math.max(W - mb.left - mb.right, 40);
+    var ih = Math.max(H - mb.top - mb.bottom, 40);
+
+    var svg = d3.select(svgContainer).append('svg')
+      .attr('width', W).attr('height', H)
+      .style('font-family', 'Inter,sans-serif')
+      .style('overflow', 'visible');
+
+    var g = svg.append('g').attr('transform', 'translate(' + mb.left + ',' + mb.top + ')');
+
+    function styleAxis(ax) {
+      ax.select('.domain').remove();
+      ax.selectAll('text').style('fill','#9ca3af').style('font-size','11px');
+    }
+    function styleGridAxis(ax) {
+      ax.select('.domain').remove();
+      ax.selectAll('.tick line').style('stroke','#f3f4f6').style('stroke-dasharray','4,4');
+      ax.selectAll('text').style('fill','#9ca3af').style('font-size','11px');
+    }
+
+    //  Scatter 
+    if (chartType === 'scatter') {
+      var scatterXKey = cfg.xKey || xKey;
+      var allNumericKeys = Object.keys(rows[0] || {}).filter(function(k) {
+        var found = rows.find(function(r) { return r[k] !== null && r[k] !== undefined; });
+        return found && typeof found[k] === 'number';
+      });
+      var scatterYKey = cfg.yKey || (cfg.series && cfg.series[0] && cfg.series[0].key) || allNumericKeys.find(function(k) { return k !== scatterXKey; }) || 'value';
+      var colorKey = cfg.colorKey || cfg.groupBy || '_seriesIndex';
+
+      var groups = colorKey ? Array.from(new Set(rows.map(function(r) { return String(r[colorKey] != null ? r[colorKey] : '(other)'); }))) : [scatterYKey];
+      var colorScale = d3.scaleOrdinal().domain(groups).range(PALETTE);
+
+      var xVals = rows.map(function(r) { return +r[scatterXKey]; }).filter(isFinite);
+      var yVals = rows.map(function(r) { return +r[scatterYKey]; }).filter(isFinite);
+      var xExt = d3.extent(xVals), yExt = d3.extent(yVals);
+      var xPad = ((xExt[1] - xExt[0]) * 0.04) || 1;
+      var yPad = ((yExt[1] - yExt[0]) * 0.06) || 1;
+
+      var xSc = d3.scaleLinear().domain([xExt[0] - xPad, xExt[1] + xPad]).range([0, iw]);
+      var ySc = d3.scaleLinear().domain([yExt[0] - yPad, yExt[1] + yPad]).nice().range([ih, 0]);
+
+      g.append('g').attr('transform', 'translate(0,' + ih + ')').call(d3.axisBottom(xSc).ticks(7).tickSize(0).tickPadding(8)).call(styleAxis);
+      g.append('g').call(d3.axisLeft(ySc).ticks(6).tickSize(-iw).tickPadding(10)).call(styleGridAxis);
+
+      if (cfg.xLabel) g.append('text').attr('x', iw/2).attr('y', ih+36).attr('text-anchor','middle').style('fill','#6b7280').style('font-size','11px').text(cfg.xLabel);
+      if (cfg.yLabel) g.append('text').attr('transform','rotate(-90)').attr('x',-ih/2).attr('y',-44).attr('text-anchor','middle').style('fill','#6b7280').style('font-size','11px').text(cfg.yLabel);
+
+      var tip = makeTip();
+      var ptR = rows.length > 2000 ? 2 : 4;
+
+      groups.forEach(function(gName) {
+        var pts = colorKey ? rows.filter(function(r) { return String(r[colorKey] != null ? r[colorKey] : '(other)') === gName; }) : rows;
+        var c = colorScale(gName);
+        g.selectAll(null).data(pts).enter().append('circle')
+          .attr('cx', function(r) { return xSc(+r[scatterXKey]); })
+          .attr('cy', function(r) { return ySc(+r[scatterYKey]); })
+          .attr('r', ptR).attr('fill', c).attr('fill-opacity', 0.75)
+          .attr('stroke', c).attr('stroke-width', 1)
+          .on('mouseover', function(event, r) {
+            d3.select(this).attr('r', ptR + 2).attr('fill-opacity', 1);
+            tip.style('opacity', 1).html('<b>' + gName + '</b><br>' + scatterXKey + ': ' + (+r[scatterXKey]).toFixed(3) + '<br>' + scatterYKey + ': ' + (+r[scatterYKey]).toFixed(3));
+            moveTip(tip, event);
+          })
+          .on('mousemove', function(event) { moveTip(tip, event); })
+          .on('mouseout', function() {
+            d3.select(this).attr('r', ptR).attr('fill-opacity', 0.75);
+            tip.style('opacity', 0);
+          });
+      });
+
+      if (showLeg && groups.length > 1) {
+        var leg = svg.append('g').attr('transform', 'translate(' + (W - mb.right + 10) + ',' + mb.top + ')');
+        groups.slice(0, 16).forEach(function(gName, li) {
+          var row = leg.append('g').attr('transform', 'translate(0,' + (li * 18) + ')');
+          row.append('circle').attr('cx', 5).attr('cy', 5).attr('r', 5).attr('fill', colorScale(gName)).attr('fill-opacity', 0.85);
+          row.append('text').attr('x', 14).attr('y', 9).style('font-size','10px').style('fill','#374151').text(gName.length > 14 ? gName.slice(0,12) + '…' : gName);
+        });
+      }
+      return;
+    }
+
+    //  Bar 
+    if (chartType === 'bar' || chartType === 'histogram') {
+      var serKey = seriesKeys[0] || 'value';
+      var cats = rows.map(function(r) { return String(r[xKey] != null ? r[xKey] : ''); });
+      var xScB = d3.scaleBand().domain(cats).range([0, iw]).padding(0.25);
+      var yMaxB = d3.max(rows, function(r) { return +r[serKey]; }) || 1;
+      var yScB = d3.scaleLinear().domain([0, yMaxB * 1.08]).nice().range([ih, 0]);
+
+      g.append('g').attr('transform', 'translate(0,' + ih + ')').call(d3.axisBottom(xScB).tickSize(0).tickPadding(8)).call(function(ax) {
+        ax.select('.domain').remove();
+        ax.selectAll('text').style('fill','#9ca3af').style('font-size','11px').attr('text-anchor','end').attr('transform','rotate(-30)');
+      });
+      g.append('g').call(d3.axisLeft(yScB).ticks(6).tickSize(-iw).tickPadding(10)).call(styleGridAxis);
+
+      var tipB = makeTip();
+      g.selectAll(null).data(rows).enter().append('rect')
+        .attr('x', function(r) { return xScB(String(r[xKey] != null ? r[xKey] : '')) || 0; })
+        .attr('y', function(r) { return yScB(+r[serKey]); })
+        .attr('width', xScB.bandwidth())
+        .attr('height', function(r) { return ih - yScB(+r[serKey]); })
+        .attr('fill', colors[0]).attr('rx', 2).attr('fill-opacity', 0.85)
+        .on('mouseover', function(event, r) {
+          d3.select(this).attr('fill-opacity', 1);
+          tipB.style('opacity',1).html('<b>' + r[xKey] + '</b><br>' + serKey + ': ' + (+r[serKey]).toFixed(3));
+          moveTip(tipB, event);
+        })
+        .on('mousemove', function(event) { moveTip(tipB, event); })
+        .on('mouseout', function() { d3.select(this).attr('fill-opacity', 0.85); tipB.style('opacity', 0); });
+
+      if (cfg.xLabel) g.append('text').attr('x', iw/2).attr('y', ih+36).attr('text-anchor','middle').style('fill','#6b7280').style('font-size','11px').text(cfg.xLabel);
+      if (cfg.yLabel) g.append('text').attr('transform','rotate(-90)').attr('x',-ih/2).attr('y',-44).attr('text-anchor','middle').style('fill','#6b7280').style('font-size','11px').text(cfg.yLabel);
+      return;
+    }
+
+    //  Pie 
+    if (chartType === 'pie') {
+      var vKeyP = seriesKeys[0] || 'value';
+      var pieData = rows.slice(0, 30);
+      var cScP = d3.scaleOrdinal().domain(pieData.map(function(r) { return String(r[xKey]); })).range(PALETTE);
+      var radius = Math.min(iw + mb.left + mb.right, ih + mb.top + mb.bottom) / 2 - 16;
+      var cxP = (W - (showLeg ? 100 : 0)) / 2, cyP = H / 2;
+      var pieGen = d3.pie().value(function(r) { return +r[vKeyP]; }).sort(null);
+      var arcGen = d3.arc().innerRadius(0).outerRadius(radius);
+      var tipP = makeTip();
+      svg.append('g').attr('transform', 'translate(' + cxP + ',' + cyP + ')')
+        .selectAll('path').data(pieGen(pieData)).enter().append('path')
+        .attr('d', arcGen).attr('fill', function(d) { return cScP(String(d.data[xKey])); })
+        .attr('stroke', '#fff').attr('stroke-width', 2).attr('fill-opacity', 0.88)
+        .on('mouseover', function(event, d) {
+          d3.select(this).attr('fill-opacity', 1);
+          tipP.style('opacity',1).html('<b>' + d.data[xKey] + '</b><br>' + vKeyP + ': ' + (+d.data[vKeyP]).toFixed(3));
+          moveTip(tipP, event);
+        })
+        .on('mousemove', function(event) { moveTip(tipP, event); })
+        .on('mouseout', function() { d3.select(this).attr('fill-opacity', 0.88); tipP.style('opacity',0); });
+      if (showLeg) {
+        var legP = svg.append('g').attr('transform', 'translate(' + (W - 96) + ',' + (H/2 - pieData.length*9) + ')');
+        pieData.slice(0,14).forEach(function(r, li) {
+          var rw = legP.append('g').attr('transform', 'translate(0,' + (li*18) + ')');
+          rw.append('rect').attr('width',10).attr('height',10).attr('rx',2).attr('fill', cScP(String(r[xKey])));
+          rw.append('text').attr('x',14).attr('y',9).style('font-size','10px').style('fill','#374151').text(String(r[xKey]).slice(0,13));
+        });
+      }
+      return;
+    }
+
+    //  Line / Area (default) 
+    var isTimeX = rows.some(function(r) { return typeof r[xKey] === 'string' && !isNaN(Date.parse(r[xKey])); });
+    var xScL, xVal;
+    if (isTimeX) {
+      var dates = rows.map(function(r) { return new Date(r[xKey]); });
+      xScL = d3.scaleTime().domain(d3.extent(dates)).range([0, iw]);
+      xVal = function(r) { return xScL(new Date(r[xKey])); };
+    } else if (rows.length <= 60) {
+      var catsL = rows.map(function(r) { return String(r[xKey] != null ? r[xKey] : ''); });
+      xScL = d3.scalePoint().domain(catsL).range([0, iw]).padding(0.05);
+      xVal = function(r) { return xScL(String(r[xKey] != null ? r[xKey] : '')); };
+    } else {
+      xScL = d3.scaleLinear().domain([0, rows.length - 1]).range([0, iw]);
+      xVal = function(r, idx) { return xScL(idx); };
+    }
+
+    var allYVals = seriesKeys.reduce(function(acc, k) {
+      return acc.concat(rows.map(function(r) { return +r[k]; }).filter(isFinite));
+    }, []);
+    var yExt2 = d3.extent(allYVals);
+    var yMin2 = yExt2[0], yMax2 = yExt2[1];
+    var yPad2 = ((yMax2 - yMin2) || 1) * 0.06;
+    var yScL = d3.scaleLinear().domain([isArea ? 0 : yMin2 - yPad2, yMax2 + yPad2]).nice().range([ih, 0]);
+
+    var xAxisL = isTimeX ? d3.axisBottom(xScL).ticks(7) : d3.axisBottom(xScL).ticks(Math.min(rows.length, 10));
+    g.append('g').attr('transform', 'translate(0,' + ih + ')').call(xAxisL.tickSize(0).tickPadding(8)).call(styleAxis);
+    g.append('g').call(d3.axisLeft(yScL).ticks(6).tickSize(-iw).tickPadding(10)).call(styleGridAxis);
+
+    if (cfg.xLabel) g.append('text').attr('x', iw/2).attr('y', ih+36).attr('text-anchor','middle').style('fill','#6b7280').style('font-size','11px').text(cfg.xLabel);
+    if (cfg.yLabel) g.append('text').attr('transform','rotate(-90)').attr('x',-ih/2).attr('y',-44).attr('text-anchor','middle').style('fill','#6b7280').style('font-size','11px').text(cfg.yLabel);
+
+    var clip = 'clip-line-' + i;
+    svg.append('defs').append('clipPath').attr('id', clip).append('rect').attr('width', iw).attr('height', ih+2).attr('y', -1);
+    var curve = smooth ? d3.curveCatmullRom.alpha(0.5) : d3.curveLinear;
+
+    seriesKeys.forEach(function(k, si) {
+      var c = colors[si % colors.length];
+      var seriesLine = d3.line()
+        .defined(function(r) { return isFinite(+r[k]); })
+        .x(function(r, idx) { return xVal(r, idx); })
+        .y(function(r) { return yScL(+r[k]); })
+        .curve(curve);
+
+      if (isArea) {
+        var seriesArea = d3.area()
+          .defined(function(r) { return isFinite(+r[k]); })
+          .x(function(r, idx) { return xVal(r, idx); })
+          .y0(yScL(0)).y1(function(r) { return yScL(+r[k]); })
+          .curve(curve);
+        g.append('path').datum(rows).attr('d', seriesArea)
+          .attr('fill', c).attr('fill-opacity', 0.12).attr('clip-path', 'url(#' + clip + ')');
+      }
+
+      g.append('path').datum(rows).attr('d', seriesLine)
+        .attr('fill', 'none').attr('stroke', c).attr('stroke-width', 2)
+        .attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round')
+        .attr('clip-path', 'url(#' + clip + ')');
+    });
+
+    var tipL = d3.select(svgContainer).append('div')
+      .style('position','absolute').style('pointer-events','none').style('background','#fff')
+      .style('border','1px solid #e5e7eb').style('border-radius','8px').style('padding','10px 14px')
+      .style('font-size','12px').style('color','#374151').style('box-shadow','0 4px 16px rgba(0,0,0,0.1)')
+      .style('opacity',0).style('z-index',999).style('min-width','120px');
+    var overlay = g.append('rect').attr('width', iw).attr('height', ih).attr('fill','transparent').style('cursor','crosshair');
+    var vLine = g.append('line').attr('y1', 0).attr('y2', ih).attr('stroke','#cbd5e1').attr('stroke-width', 1).attr('stroke-dasharray','4,4').style('pointer-events','none').style('opacity',0);
+
+    overlay.on('mousemove', function(event) {
+      var mouseX = d3.pointer(event)[0];
+      var closestIdx = 0, minDist = Infinity;
+      rows.forEach(function(r, idx) {
+        var dx = Math.abs(xVal(r, idx) - mouseX);
+        if (dx < minDist) { minDist = dx; closestIdx = idx; }
+      });
+      var r = rows[closestIdx];
+      vLine.attr('x1', xVal(r, closestIdx)).attr('x2', xVal(r, closestIdx)).style('opacity', 1);
+      var rect2 = svgContainer.getBoundingClientRect();
+      var tipX2 = event.clientX - rect2.left + 14;
+      var tipY2 = event.clientY - rect2.top - 20;
+      var html = '<div style="font-weight:700;font-size:11px;color:#6b7280;margin-bottom:4px;">' + String(r[xKey] != null ? r[xKey] : '') + '</div>';
+      seriesKeys.forEach(function(k, si) {
+        var v = r[k];
+        var c = colors[si % colors.length];
+        html += '<div style="display:flex;align-items:center;gap:6px;margin-top:2px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + c + ';flex-shrink:0;"></span><span style="color:#374151;">' + (labels[k] || k) + ': <b>' + (v !== null && v !== undefined ? (+v).toFixed(3) : '--') + '</b></span></div>';
+      });
+      tipL.style('opacity',1).html(html).style('left', tipX2 + 'px').style('top', tipY2 + 'px');
+    }).on('mouseout', function() { tipL.style('opacity',0); vLine.style('opacity',0); });
+
+    if (showLeg && seriesKeys.length > 1) {
+      var legL = svg.append('g').attr('transform', 'translate(' + (W - mb.right + 10) + ',' + mb.top + ')');
+      seriesKeys.slice(0, 16).forEach(function(k, li) {
+        var rowL = legL.append('g').attr('transform', 'translate(0,' + (li * 18) + ')');
+        rowL.append('line').attr('x1',0).attr('x2',14).attr('y1',5).attr('y2',5).attr('stroke', colors[li % colors.length]).attr('stroke-width',2);
+        rowL.append('text').attr('x',18).attr('y',9).style('font-size','10px').style('fill','#374151').text((labels[k] || k).slice(0,15));
+      });
+    }
+  }
+
+  draw();
+  var ro = new ResizeObserver(function() { draw(); });
+  ro.observe(svgContainer);
+  charts[i] = { _cleanup: function() { ro.disconnect(); } };
+}
+
+const COLORS = ['#334155','#2563eb','#059669','#d97706','#7c3aed','#dc2626'];
+
+//  Table 
+function renderTable(i, el, data) {
+  const panel = state.panels[i];
+  const nodeId = panel.nodeId;
+  const nodeDef = NODES.find(n => n.id === nodeId);
+  const cfg = nodeDef?.tableConfig ?? {};
+  const maxRows   = cfg.maxRows ?? 5000;
+  const striped   = cfg.striped ?? 'odd';
+  const borders   = cfg.borders ?? 'compact';
+  const fontSize  = (cfg.fontSize ?? 12) + 'px';
+  const sortable  = cfg.sortable !== false;
+  const pinned    = cfg.pinnedCols ?? [];
+  const hidden    = new Set(cfg.hiddenCols ?? []);
+  const precision = cfg.numberPrecision ?? 4;
+  // NOTE: path filtering is already done in renderPanelContent  do NOT re-filter here.
+
+  // If path-extraction already produced a flat array of objects, use it directly —
+  // do NOT re-unwrap or the combinedData heuristic will re-process and corrupt the data.
+  let rows;
+  if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'object' && data[0] !== null) {
+    // Already normalised by renderPanelContent path extraction — use as-is.
+    // Special case: if it is a single summary row (all scalar values), pivot to
+    // label | value format so it reads vertically instead of as one wide row.
+    const single = data.length === 1 && Object.values(data[0]).every(v => typeof v !== 'object');
+    if (single) {
+      rows = Object.entries(data[0]).map(([k, v]) => ({ field: k, value: v }));
+    } else {
+      rows = data;
+    }
+  } else {
+    const unwrapped = unwrapDataPWA(data);
+    if (Array.isArray(unwrapped) && unwrapped.length > 0 && typeof unwrapped[0] === 'number') {
+      rows = unwrapped.map((v, i) => ({ index: i, value: v }));
+    } else if (Array.isArray(unwrapped)) {
+      rows = unwrapped;
+    } else if (unwrapped && typeof unwrapped === 'object') {
+      rows = [unwrapped];
+    } else if (unwrapped !== null && unwrapped !== undefined) {
+      rows = [{ value: unwrapped }];
+    }
+  }
+
+  if (!rows || rows.length === 0) { el.innerHTML = emptyState('tables'); return; }
+
+  const sample = rows[0] ?? {};
+  const allCols = Object.keys(sample);
+  const pinnedValid = pinned.filter(c => allCols.includes(c) && !hidden.has(c));
+  const cols = [...pinnedValid, ...allCols.filter(c => !pinnedValid.includes(c) && !hidden.has(c))];
+  let sortCol=null, sortDir=1, sortedRows=[...rows].slice(0,maxRows);
+
+  const borderColor = '#e5e7eb';
+
+  function fmt(v) {
+    if (v===null||v===undefined) return '—';
+    if (typeof v==='object') return JSON.stringify(v);
+    if (typeof v==='number' && !Number.isInteger(v)) return v.toFixed(precision);
+    return String(v);
+  }
+
+  function buildTable() {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'height:100%;overflow:auto;padding:12px';
+    const table = document.createElement('table');
+    table.style.cssText = `width:100%;border-collapse:collapse;font-size:${fontSize};text-align:left`;
+    if (borders !== 'none') table.style.border = `1px solid ${borderColor}`;
+
+    const thead = table.createTHead();
+    const hrow = thead.insertRow();
+    cols.forEach(c => {
+      const th = document.createElement('th');
+      th.textContent = c;
+      th.style.cssText = `padding:7px 10px;background:#f8fafc;border-bottom:2px solid ${borderColor};${borders==='full'?'border-right:1px solid '+borderColor+';':''}font-weight:700;color:#374151;position:sticky;top:0;z-index:1;font-size:${fontSize};white-space:nowrap`;
+      if (sortable) {
+        th.style.cursor = 'pointer';
+        th.onclick = () => {
+          if(sortCol===c) sortDir*=-1; else {sortCol=c;sortDir=1;}
+          sortedRows.sort((a,b)=>{const va=a[c],vb=b[c];return(va<vb?-1:va>vb?1:0)*sortDir;});
+          el.innerHTML='';
+          el.appendChild(buildTable());
+        };
+      }
+      hrow.appendChild(th);
+    });
+
+    const tbody = table.createTBody();
+    sortedRows.forEach((row,ri) => {
+      const tr = tbody.insertRow();
+      const isStripe = striped==='odd' ? ri%2!==0 : striped==='even' ? ri%2===0 : false;
+      cols.forEach(c => {
+        const td = tr.insertCell();
+        td.textContent = fmt(row[c]);
+        td.style.cssText = `padding:5px 10px;color:#374151;font-size:${fontSize};${isStripe?'background:#f9fafb;':'background:#fff;'}${borders!=='none'?'border-bottom:1px solid #f3f4f6;':''}${borders==='full'?'border-right:1px solid '+borderColor+';':''}`;
+      });
+    });
+    wrap.appendChild(table);
+    return wrap;
+  }
+  el.innerHTML='';
+  el.appendChild(buildTable());
+}
+
+//  Interactive JSON Explorer 
+function renderJsonExplorer(i, el, data) {
+  const panel = state.panels[i];
+  const wrap = document.createElement('div');
+  wrap.className = 'hb-json-wrap';
+
+  let saved;
+  try {
+    saved = JSON.parse(window.localStorage.getItem('hb_pwa_paths_' + panel.nodeId));
+  } catch(e) {}
+
+  let selectedPaths = panel.selectedPaths || saved || [];
+  if (!panel.selectedPaths && !saved) {
+    const nodeDef = NODES.find(n => n.id === panel.nodeId);
+    if (nodeDef) {
+       const sp = new Set([
+         ...(nodeDef.chartConfig?.selectedPaths || []),
+         ...(nodeDef.tableConfig?.selectedPaths || []),
+         ...(nodeDef.mapConfig?.selectedPaths || [])
+       ]);
+       selectedPaths = Array.from(sp);
+    }
+  }
+  panel.selectedPaths = selectedPaths;
+
+  const onChange = (path, checked) => {
+    if (checked && !selectedPaths.includes(path)) {
+       selectedPaths.push(path);
+    } else if (!checked) {
+       selectedPaths = selectedPaths.filter(p => p !== path);
+    }
+    panel.selectedPaths = selectedPaths;
+    try {
+      window.localStorage.setItem('hb_pwa_paths_' + panel.nodeId, JSON.stringify(selectedPaths));
+    } catch(e) {}
+
+    // Sync selectedPaths to ALL panels for the same nodeId and force re-render
+    // on non-data panels (chart/table). The panel-content-{idx} ID is what
+    // buildPanelEl assigns  this is the correct selector.
+    state.panels.forEach((p, idx) => {
+      if (p.nodeId === panel.nodeId) {
+        p.selectedPaths = selectedPaths;
+        if (p.view !== 'data') {
+          renderPanelContent(idx, p);
+        }
+      }
+    });
+  };
+
+  wrap.appendChild(buildJsonNode(data, null, true, '', selectedPaths, onChange));
+  el.innerHTML = '';
+  el.appendChild(wrap);
+}
+
+function buildJsonNode(value, key, expanded, currentPath = '', selectedPaths = [], onChange = null) {
+  const frag = document.createDocumentFragment();
+
+  const isObj = value !== null && typeof value === 'object' && !Array.isArray(value);
+  const isArr = Array.isArray(value);
+
+  if (isObj || isArr) {
+    const entries = isArr ? value.map((v,idx) => [idx,v]) : Object.entries(value);
+    const count = entries.length;
+    const bracket = isArr ? ['[',']'] : ['{','}'];
+    const summary = isArr ? `Array[${count}]` : `Object{${count}}`;
+
+    const row = document.createElement('div');
+    const toggle = document.createElement('span');
+    toggle.className = 'hb-json-toggle';
+    toggle.innerHTML = `<i class="fas fa-caret-${expanded ? 'down' : 'right'}"></i>`;
+
+    if (key !== null) {
+      if (onChange) {
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.className = 'hb-json-checkbox';
+        cb.checked = selectedPaths.includes(currentPath);
+        cb.onclick = (e) => {
+          e.stopPropagation();
+          onChange(currentPath, e.target.checked);
+        };
+        toggle.appendChild(cb);
+      }
+      const k = document.createElement('span'); k.className = 'hb-json-key'; k.textContent = isArr ? key : `"${key}"`;
+      const col = document.createElement('span'); col.className = 'hb-json-colon'; col.textContent = ':';
+      toggle.appendChild(k);
+      toggle.appendChild(col);
+    }
+    const br = document.createElement('span'); br.textContent = bracket[0];
+    const sm = document.createElement('span'); sm.className = 'hb-json-summary'; sm.textContent = expanded ? '' : summary;
+    toggle.appendChild(br);
+    toggle.appendChild(sm);
+    row.appendChild(toggle);
+    frag.appendChild(row);
+
+    const children = document.createElement('div');
+    children.className = 'hb-json-node' + (expanded ? '' : ' hb-json-collapsed');
+
+    const renderChunk = (pageIndex) => {
+      children.innerHTML = '';
+      const pageSize = 100;
+      const start = pageIndex * pageSize;
+      const end = Math.min(start + pageSize, count);
+      for (let i = start; i < end; i++) {
+        const childKey = entries[i][0];
+        const childPath = currentPath ? (isArr ? `${currentPath}[${childKey}]` : `${currentPath}.${childKey}`) : String(childKey);
+        children.appendChild(buildJsonNode(entries[i][1], childKey, false, childPath, selectedPaths, onChange));
+      }
+      
+      if (count > pageSize) {
+        const navRow = document.createElement('div');
+        navRow.style.cssText = 'padding:6px 0 6px 16px;display:flex;gap:8px;align-items:center';
+        
+        const pBtn = document.createElement('button');
+        pBtn.textContent = 'Prev';
+        pBtn.className = 'hb-json-page-btn';
+        pBtn.disabled = pageIndex === 0;
+        
+        const nBtn = document.createElement('button');
+        nBtn.textContent = 'Next';
+        nBtn.className = 'hb-json-page-btn';
+        nBtn.disabled = end >= count;
+        
+        const info = document.createElement('span');
+        info.style.cssText = 'font-size:10px;color:#94a3b8;font-weight:600';
+        info.textContent = `${start + 1}-${end} of ${count}`;
+        
+        pBtn.onclick = (e) => { e.stopPropagation(); renderChunk(pageIndex - 1); };
+        nBtn.onclick = (e) => { e.stopPropagation(); renderChunk(pageIndex + 1); };
+        
+        navRow.appendChild(pBtn);
+        navRow.appendChild(info);
+        navRow.appendChild(nBtn);
+        children.appendChild(navRow);
+      }
+    };
+
+    if (expanded) {
+      renderChunk(0);
+    }
+
+    const closeRow = document.createElement('div');
+    closeRow.textContent = bracket[1];
+    closeRow.style.color = '#94a3b8';
+
+    toggle.onclick = (e) => {
+      e.stopPropagation();
+      const open = children.classList.toggle('hb-json-collapsed');
+      toggle.querySelector('i').className = open ? 'fas fa-caret-right' : 'fas fa-caret-down';
+      sm.textContent = open ? summary : '';
+      closeRow.style.display = open ? 'none' : '';
+      if (!open && children.childNodes.length === 0) {
+        renderChunk(0);
+      }
+    };
+
+    frag.appendChild(children);
+    frag.appendChild(closeRow);
+  } else {
+    const row = document.createElement('div');
+    row.style.paddingLeft = '16px';
+    if (key !== null) {
+      if (onChange) {
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.className = 'hb-json-checkbox';
+        cb.checked = selectedPaths.includes(currentPath);
+        cb.onclick = (e) => {
+          e.stopPropagation();
+          onChange(currentPath, e.target.checked);
+        };
+        row.appendChild(cb);
+      }
+      const k = document.createElement('span'); k.className = 'hb-json-key'; k.textContent = `"${key}"`;
+      const col = document.createElement('span'); col.className = 'hb-json-colon'; col.textContent = ': ';
+      row.appendChild(k); row.appendChild(col);
+    }
+    const v = document.createElement('span');
+    if (typeof value === 'string') { v.className = 'hb-json-str'; v.textContent = `"${value}"`; }
+    else if (typeof value === 'number') { v.className = 'hb-json-num'; v.textContent = String(value); }
+    else if (typeof value === 'boolean') { v.className = 'hb-json-bool'; v.textContent = String(value); }
+    else { v.className = 'hb-json-null'; v.textContent = 'null'; }
+    row.appendChild(v);
+    frag.appendChild(row);
+  }
+  return frag;
+}
+
+//  Inspector 
+const NODE_TYPE_STYLES = {
+  data:         { icon:'fa-database',    bg:'#dbeafe', color:'#2563eb' },
+  analysis:     { icon:'fa-calculator',  bg:'#d1fae5', color:'#059669' },
+  visualization:{ icon:'fa-chart-line',  bg:'#ede9fe', color:'#7c3aed' },
+  code:         { icon:'fa-code',        bg:'#fef3c7', color:'#d97706' },
+  wasm:         { icon:'fa-microchip',   bg:'#fce7f3', color:'#db2777' },
+  session:      { icon:'fa-folder',      bg:'#f3f4f6', color:'#6b7280' },
+};
+
+function renderInspector() {
+  const list = document.getElementById('hb-node-list');
+  list.innerHTML = NODES.length === 0 ? '<div class="hb-empty" style="height:auto;padding:24px"><i class="fas fa-layer-group"></i><span>No results</span></div>' : '';
+  NODES.forEach(node => {
+    const style = NODE_TYPE_STYLES[node.type] || { icon:'fa-box', bg:'#f3f4f6', color:'#6b7280' };
+    const item = document.createElement('div');
+    item.className = 'hb-node-item';
+    item.innerHTML = `<div class="hb-node-icon" style="background:${style.bg}"><i class="fas ${style.icon}" style="color:${style.color}"></i></div>
+      <div style="flex:1;overflow:hidden">
+        <div class="hb-node-name">${esc(node.name)}</div>
+        <div class="hb-node-type">${esc(node.type)}</div>
+      </div>`;
+    item.onclick = () => {
+      document.querySelectorAll('.hb-node-item').forEach(x => x.classList.remove('active'));
+      item.classList.add('active');
+      // Smart target: prefer chart panel, then table, then data, then any non-map panel
+      const priority = ['charts','tables','data','maps'];
+      let targetIdx = 0;
+      for (const viewType of priority) {
+        const found = state.panels.findIndex(p => p.view === viewType);
+        if (found !== -1) { targetIdx = found; break; }
+      }
+      const panel = state.panels[targetIdx];
+      panel.nodeId = node.id;
+      const sel = document.querySelector(`#panel-${targetIdx} .hb-node-select`);
+      if (sel) sel.value = node.id;
+      renderPanelContent(targetIdx, panel);
+    };
+    list.appendChild(item);
+  });
+}
+
+function decodeB64(obj) {
+  if (!obj) return obj;
+  if (Array.isArray(obj)) {
+    for (let i=0; i<obj.length; i++) obj[i] = decodeB64(obj[i]);
+    return obj;
+  }
+  if (typeof obj === 'object') {
+    if (obj.__hb_gzip && obj.data) {
+      if (typeof window.pako !== 'undefined') {
+        const binaryString = window.atob(obj.data);
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) bytes[i] = binaryString.charCodeAt(i);
+        const inflated = window.pako.inflate(bytes);
+        const jsonStr = new TextDecoder().decode(inflated);
+        return decodeB64(JSON.parse(jsonStr));
+      }
+      return obj;
+    }
+    if (obj.__hb_type === 'b64' && obj.data) {
+      const binary = window.atob(obj.data);
+      const len = binary.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
+      return bytes.buffer;
+    }
+    for (const key of Object.keys(obj)) {
+      obj[key] = decodeB64(obj[key]);
+    }
+  }
+  return obj;
+}
+
+//  Data loading 
+// dataCache stores the resolved value once available, OR the in-flight Promise
+// while the fetch is pending.  This prevents duplicate network requests when
+// multiple panels reference the same nodeId and both call loadData concurrently.
+async function loadData(nodeId) {
+  // Return cached resolved value or await the already-in-flight promise
+  if (nodeId in dataCache) {
+    const cached = dataCache[nodeId];
+    // If it's a Promise (in-flight), await it; otherwise return directly
+    return (cached && typeof cached.then === 'function') ? cached : cached;
+  }
+
+  const node = NODES.find(n => n.id === nodeId);
+  if (!node) { dataCache[nodeId] = null; return null; }
+
+  // Store the promise immediately so concurrent callers share it
+  const promise = (async () => {
+    try {
+      let data;
+      if (typeof window['HB_DATA_' + nodeId] !== 'undefined') {
+        data = window['HB_DATA_' + nodeId];
+      } else if (document.getElementById('hb-data-' + nodeId)) {
+        data = JSON.parse(document.getElementById('hb-data-' + nodeId).textContent);
+      } else if (!window.HB_SERVE_MODE) {
+        // Lazy load the .js file asynchronously to bypass file:// CORS
+        data = await new Promise((resolve, reject) => {
+          // Avoid injecting the same script tag twice if a previous load already set the global
+          if (typeof window['HB_DATA_' + nodeId] !== 'undefined') {
+            resolve(window['HB_DATA_' + nodeId]); return;
+          }
+          const existing = document.querySelector('script[src="assets/data/' + nodeId + '.js"]');
+          if (existing) {
+            // Script tag already injected  poll for the global to appear
+            const poll = setInterval(() => {
+              if (typeof window['HB_DATA_' + nodeId] !== 'undefined') {
+                clearInterval(poll); resolve(window['HB_DATA_' + nodeId]);
+              }
+            }, 50);
+            setTimeout(() => { clearInterval(poll); resolve(undefined); }, 5000);
+            return;
+          }
+          const script = document.createElement('script');
+          script.src = 'assets/data/' + nodeId + '.js';
+          script.onload = () => resolve(window['HB_DATA_' + nodeId]);
+          script.onerror = () => reject(new Error('Failed to load ' + script.src));
+          document.head.appendChild(script);
+        });
+      } else {
+        const ext = node.isBinary ? 'bin' : 'json';
+        const res = await fetch(`assets/data/${nodeId}.${ext}`);
+        if (!res.ok) throw new Error("fetch failed");
+        if (ext === 'bin') {
+          const buf = await res.arrayBuffer();
+          if (node.isGzip && typeof window.pako !== 'undefined') {
+            const inflated = window.pako.inflate(new Uint8Array(buf));
+            data = JSON.parse(new TextDecoder().decode(inflated));
+          } else {
+            data = buf;
+          }
+        } else {
+          data = await res.json();
+        }
+      }
+      data = decodeB64(data);
+      dataCache[nodeId] = data;   // replace in-flight promise with resolved value
+      return data;
+    } catch(err) {
+      console.error('loadData error:', err);
+      dataCache[nodeId] = null;
+      return null;
+    }
+  })();
+
+  dataCache[nodeId] = promise;  // park the promise so concurrent callers await it
+  return promise;
+}
+
+//  Utilities 
+function emptyState(view) {
+  const icons = {maps:'fa-map',charts:'fa-chart-line',tables:'fa-table',data:'fa-code'};
+  const labels = {maps:'Select a result for map view',charts:'Select a result for chart view',tables:'Select a result for table view',data:'Select a result to explore JSON'};
+  return `<div class="hb-empty"><i class="fas ${icons[view]||'fa-question'}"></i><span>${labels[view]||'Select a result'}</span></div>`;
+}
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function hexAlpha(c, alphaStr) {
+  if (!c) return '#cbd5e1';
+  if (c.startsWith('#')) return c + alphaStr;
+  if (c.startsWith('rgb(')) return c.replace('rgb(', 'rgba(').replace(')', ', ' + (parseInt(alphaStr, 16)/255).toFixed(2) + ')');
+  
+  // If it's a named color or var(--), we can't easily add alpha string
+  // Let Chart.js handle it, or we create a canvas wrapper, but returning the raw color is safest.
+  // Actually, Chart.js supports arrays for opacity in some modes, but CSS color-mix is modern:
+  if (c.startsWith('var(') || !c.startsWith('#')) {
+    return `color-mix(in srgb, ${c} ${Math.floor((parseInt(alphaStr, 16)/255)*100)}%, transparent)`;
+  }
+  return c;
+}
+
+function buildAnimationPlayer(totalFrames, initialFrame, onFrame, frameLabels) {
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;align-items:center;gap:6px;padding:5px 10px;background:#f8fafc;border-top:1px solid #e5e7eb;flex-shrink:0;font-family:"Inter",sans-serif;font-size:10px;z-index:500;position:relative';
+  let currentFrame = initialFrame;
+  let playing = false;
+  let fps = 4;
+  let loop = false;
+  let timeout = null;
+
+  const lbl = document.createElement('span');
+  lbl.style.cssText = 'font-weight:700;color:#475569;min-width:56px;text-align:center;background:#e2e8f0;border-radius:4px;padding:2px 6px;white-space:nowrap';
+
+  const range = document.createElement('input');
+  range.type = 'range'; range.min = 0; range.max = totalFrames - 1; range.step = 1; range.value = currentFrame;
+  range.style.cssText = 'flex:1;cursor:pointer;accent-color:#3b82f6;min-width:60px';
+
+  const btnPlay = document.createElement('button');
+
+  const updateUI = () => {
+    range.value = currentFrame;
+    const label = (frameLabels && frameLabels[currentFrame]) ? frameLabels[currentFrame] : (currentFrame + 1);
+    lbl.textContent = label + ' / ' + totalFrames;
+    btnPlay.innerHTML = playing ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+    btnPlay.style.background = playing ? '#334155' : '#fff';
+    btnPlay.style.color = playing ? '#fff' : '#374151';
+  };
+
+  const stop = () => {
+    if (timeout) clearTimeout(timeout);
+    timeout = null;
+    playing = false;
+    updateUI();
+  };
+
+  const play = () => {
+    if (timeout) clearTimeout(timeout);
+    playing = true;
+    updateUI();
+    const loopStep = async () => {
+      if (!playing) return;
+      let next = currentFrame + 1;
+      if (next >= totalFrames) {
+        if (!loop) { stop(); return; }
+        next = 0;
+      }
+      await setFrame(next);
+      if (playing) {
+        timeout = setTimeout(loopStep, 1000 / fps);
+      }
+    };
+    timeout = setTimeout(loopStep, 1000 / fps);
+  };
+
+  let _busy = false;
+  const setFrame = async (f) => {
+    currentFrame = Math.max(0, Math.min(totalFrames - 1, f));
+    updateUI();
+    if (_busy) return; // discard rapid clicks — active frame load still in progress
+    _busy = true;
+    try {
+      if (onFrame) {
+        const result = onFrame(currentFrame);
+        if (result instanceof Promise) await result;
+      }
+    } finally {
+      _busy = false;
+    }
+  };
+
+  const mkBtn = (html, onClick, btnEl=null) => {
+    const b = btnEl || document.createElement('button');
+    b.innerHTML = html;
+    b.style.cssText = 'display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:5px;border:1px solid #e2e8f0;background:#fff;color:#374151;cursor:pointer;font-size:10px;flex-shrink:0;transition:all 0.1s';
+    b.onclick = onClick;
+    return b;
+  };
+
+  const btnFirst = mkBtn('<i class="fas fa-step-backward"></i>', () => { stop(); setFrame(0); });
+  const btnPrev = mkBtn('<i class="fas fa-step-backward fa-rotate-90" style="transform:scaleX(-1) rotate(90deg)"></i>', () => { stop(); setFrame(currentFrame - 1); });
+  mkBtn('', () => { if (playing) stop(); else play(); }, btnPlay);
+  const btnNext = mkBtn('<i class="fas fa-step-forward fa-rotate-90" style="transform:rotate(90deg)"></i>', () => { stop(); setFrame(currentFrame + 1); });
+  const btnLast = mkBtn('<i class="fas fa-step-forward"></i>', () => { stop(); setFrame(totalFrames - 1); });
+
+  range.oninput = (e) => { stop(); setFrame(Number(e.target.value)); };
+
+  const fpsLbl = document.createElement('span');
+  fpsLbl.textContent = 'FPS:'; fpsLbl.style.cssText = 'color:#94a3b8;font-weight:600';
+  const fpsRange = document.createElement('input');
+  fpsRange.type = 'range'; fpsRange.min = 1; fpsRange.max = 30; fpsRange.step = 1; fpsRange.value = fps;
+  fpsRange.style.cssText = 'width:50px;cursor:pointer;accent-color:#10b981';
+  const fpsVal = document.createElement('span');
+  fpsVal.textContent = fps; fpsVal.style.cssText = 'font-weight:700;color:#374151;min-width:16px';
+  fpsRange.oninput = (e) => {
+    fps = Number(e.target.value);
+    fpsVal.textContent = fps;
+    if (playing) play();
+  };
+
+  const btnLoop = mkBtn('<i class="fas fa-redo"></i>', () => {
+    loop = !loop;
+    btnLoop.style.background = loop ? '#334155' : '#fff';
+    btnLoop.style.color = loop ? '#fff' : '#374151';
+  });
+
+  wrap.appendChild(btnFirst); wrap.appendChild(btnPrev); wrap.appendChild(btnPlay); wrap.appendChild(btnNext); wrap.appendChild(btnLast);
+  wrap.appendChild(range); wrap.appendChild(lbl);
+  wrap.appendChild(fpsLbl); wrap.appendChild(fpsRange); wrap.appendChild(fpsVal); wrap.appendChild(btnLoop);
+  
+  updateUI();
+  return { el: wrap, stop, setFrame };
+}
+
+function safeMinMax(gr) {
+  const noD = gr.noDataValue;
+  const band = gr.values?.[0];
+  if (band) {
+    const is2D = typeof band[0] !== "number";
+    let lo = Infinity, hi = -Infinity;
+    if (is2D) {
+      const nR = band.length;
+      const nC = band[0]?.length ?? 0;
+      const rS = Math.max(1, Math.floor(nR / 100));
+      const cS = Math.max(1, Math.floor(nC / 100));
+      for (let r = 0; r < nR; r += rS) {
+        const row = band[r];
+        for (let c = 0; c < nC; c += cS) {
+          const v = row[c];
+          if (!isFinite(v) || v <= -900 || (noD != null && v === noD)) continue;
+          if (v < lo) lo = v; if (v > hi) hi = v;
+        }
+      }
+    } else {
+      const len = band.length;
+      const step = Math.max(1, Math.floor(len / 10000));
+      for (let i = 0; i < len; i += step) {
+        const v = band[i];
+        if (!isFinite(v) || v <= -900 || (noD != null && v === noD)) continue;
+        if (v < lo) lo = v; if (v > hi) hi = v;
+      }
+    }
+    if (lo < hi) return { min: lo, max: hi };
+  }
+  const fallMin = gr.mins?.[0] ?? 0;
+  const fallMax = gr.maxs?.[0] ?? 1;
+  return { min: fallMin <= -900 ? 0 : fallMin, max: fallMax };
+}
+
+function getPaletteGradient(palette) {
+  switch (palette) {
+    case "ocean": return "linear-gradient(to right, rgb(0, 30, 100), rgb(0, 76, 255))";
+    case "grayscale": return "linear-gradient(to right, rgb(0,0,0), rgb(255,255,255))";
+    case "hsv": return "linear-gradient(to right, hsl(0,100%,50%), hsl(60,100%,50%), hsl(120,100%,50%), hsl(180,100%,50%), hsl(240,100%,50%), hsl(300,100%,50%), hsl(360,100%,50%))";
+    case "terrain": return "linear-gradient(to right, rgba(59,130,246,0.8) 0%, rgba(59,130,246,0.8) 25%, rgba(34,197,94,0.8) 25%, rgba(34,197,94,0.8) 50%, rgba(217,119,6,0.8) 50%, rgba(217,119,6,0.8) 75%, rgba(241,245,249,0.9) 75%, rgba(241,245,249,0.9) 100%)";
+    case "plasma": return "linear-gradient(to right, rgba(13,8,135,0.85), rgba(126,3,168,0.85), rgba(204,71,120,0.85), rgba(248,149,64,0.85), rgba(240,249,33,0.85))";
+    case "magma": return "linear-gradient(to right, rgba(0,0,100,0.85), rgba(81,18,124,0.85), rgba(182,54,121,0.85), rgba(251,136,97,0.85), rgba(252,253,191,0.85))";
+    case "viridis":
+    default: return "linear-gradient(to right, rgba(68,1,84,0.85), rgba(59,82,139,0.85), rgba(33,145,140,0.85), rgba(94,201,98,0.85), rgba(253,231,37,0.85))";
+  }
+}
+
+  </script>
+  
+</body>
+</html>

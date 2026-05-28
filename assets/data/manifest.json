@@ -1,0 +1,121 @@
+[
+  {
+    "id": "node-nasa-precip",
+    "name": "NASA_POWER_DAILY_PRECIP",
+    "type": "data"
+  },
+  {
+    "id": "node-usgs-flow",
+    "name": "USGS_DAILY_FLOW",
+    "type": "data"
+  },
+  {
+    "id": "node-parse-precip",
+    "name": "PARSE_NASA_PRECIP",
+    "type": "code",
+    "analyticalCode": "if (!data) return [];\nconst raw = typeof data === 'string' ? JSON.parse(data) : data;\nconst params = raw?.properties?.parameter ?? raw?.parameter ?? {};\nconst P = params.PRECTOTCORR ?? params.PRECTOT ?? {};\nconst T = params.T2M ?? {};\nconst SW = params.ALLSKY_SFC_SW_DWN ?? {};\nreturn Object.keys(P)\n  .map(dt => ({\n    date: `${dt.slice(0,4)}-${dt.slice(4,6)}-${dt.slice(6,8)}`,\n    precip_mm: Math.max(0, parseFloat(P[dt]) || 0),\n    T2M: parseFloat(T[dt]) || 0,\n    Solar_Rad: parseFloat(SW[dt]) || 0\n  }))\n  .filter(r => r.date.length === 10)\n  .sort((a,b) => a.date.localeCompare(b.date));"
+  },
+  {
+    "id": "node-parse-flow",
+    "name": "PARSE_USGS_FLOW",
+    "type": "code",
+    "analyticalCode": "if (!data) return [];\nconst raw = typeof data === 'string' ? JSON.parse(data) : data;\nconst ts = (raw?.value?.timeSeries ?? raw?.timeSeries ?? [])[0];\nif (!ts) return [];\nconst vals = ts?.values?.[0]?.value ?? [];\nreturn vals\n  .map(v => ({ date: v.dateTime?.slice(0,10), Q_cms: parseFloat(v.value)*0.0283168 }))\n  .filter(r => !isNaN(r.Q_cms) && r.Q_cms >= 0)\n  .sort((a,b) => a.date.localeCompare(b.date));"
+  },
+  {
+    "id": "node-lstm-train",
+    "name": "ANN_TRAIN_PREDICT",
+    "type": "code",
+    "analyticalCode": "import json, numpy as np, pandas as pd, math\nfrom sklearn.neural_network import MLPRegressor\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.metrics import mean_squared_error, r2_score\n\npdf = pd.DataFrame(json.loads(input_data[0]) if isinstance(input_data[0],str) else input_data[0])\nqdf = pd.DataFrame(json.loads(input_data[1]) if isinstance(input_data[1],str) else input_data[1])\ndf = pd.merge(pdf, qdf, on='date', how='inner').sort_values('date').reset_index(drop=True)\ndf = df.dropna(subset=['precip_mm','Q_cms'])\n\nif len(df) < 100:\n    return {'error': f'Insufficient merged input_"
+  },
+  {
+    "id": "node-chart",
+    "name": "ANN_PREDICTION_CHART",
+    "type": "visualization",
+    "chartConfig": {
+      "type": "line",
+      "title": "ANN Streamflow Forecast — Guadalupe River",
+      "xKey": "date",
+      "yLabel": "Streamflow (m³/s)",
+      "xLabel": "Date",
+      "series": [
+        {
+          "key": "observed",
+          "label": "Observed",
+          "color": "#2563eb",
+          "dashed": false
+        },
+        {
+          "key": "predicted",
+          "label": "LSTM Pred",
+          "color": "#dc2626",
+          "dashed": true
+        }
+      ],
+      "selectedPaths": [
+        "comparison"
+      ]
+    }
+  },
+  {
+    "id": "node-metrics",
+    "name": "ANN_METRICS_TABLE",
+    "type": "visualization",
+    "tableConfig": {
+      "title": "ANN Model Performance Metrics",
+      "selectedPaths": [
+        "R2_Score",
+        "KGE",
+        "RMSE_cms",
+        "PBIAS_pct",
+        "epochs_run"
+      ],
+      "striped": "odd"
+    }
+  },
+  {
+    "id": "node-scatter",
+    "name": "ANN_SCATTER",
+    "type": "visualization",
+    "chartConfig": {
+      "type": "scatter",
+      "title": "ANN Observed vs Predicted",
+      "xKey": "obs",
+      "yLabel": "Predicted Flow",
+      "xLabel": "Observed Flow",
+      "series": [
+        {
+          "key": "pred",
+          "label": "Predictions",
+          "color": "#14b8a6",
+          "dashed": false
+        }
+      ],
+      "selectedPaths": [
+        "scatter"
+      ]
+    }
+  },
+  {
+    "id": "node-hist",
+    "name": "ANN_RESIDUALS_HIST",
+    "type": "visualization",
+    "chartConfig": {
+      "type": "bar",
+      "title": "Residual Distribution",
+      "xKey": "bin",
+      "yLabel": "Frequency",
+      "xLabel": "Error Bin",
+      "series": [
+        {
+          "key": "count",
+          "label": "Count",
+          "color": "#ef4444",
+          "dashed": false
+        }
+      ],
+      "selectedPaths": [
+        "histogram"
+      ]
+    }
+  }
+]
